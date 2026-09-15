@@ -1,0 +1,66 @@
+.footer {
+    @apply w-full bg-primary text-white;
+}
+
+.container {
+    @apply mx-auto grid w-full max-w-[1200px];
+    @apply grid-cols-1 gap-12 px-6 py-16;
+    @apply md:grid-cols-2 lg:grid-cols-4 lg:gap-16;
+}
+
+.brand {
+    @apply lg:col-span-1;
+}
+
+.brand h2 {
+    @apply mb-4 text-2xl font-bold;
+}
+
+.brand p {
+    @apply max-w-sm text-sm leading-7 text-brand;
+}
+
+.column {
+    @apply flex flex-col items-start gap-3;
+}
+
+.column h3 {
+    @apply mb-2 text-sm font-semibold uppercase tracking-wider;
+}
+
+.column a {
+    @apply text-sm text-brand transition-colors duration-200;
+    @apply hover:text-tertiary;
+}
+
+.socials {
+    @apply mt-6 flex gap-5;
+}
+
+.socials a {
+    @apply font-medium;
+}
+
+.bottom {
+    @apply border-t border-secondary;
+}
+
+.bottom {
+    @apply mx-auto flex w-full max-w-[1200px];
+    @apply flex-col items-start justify-between gap-4;
+    @apply px-6 py-6;
+    @apply sm:flex-row sm:items-center;
+}
+
+.bottom p {
+    @apply text-xs text-brand;
+}
+
+.legal {
+    @apply flex gap-5;
+}
+
+.legal a {
+    @apply text-xs text-brand transition-colors duration-200;
+    @apply hover:text-white;
+}

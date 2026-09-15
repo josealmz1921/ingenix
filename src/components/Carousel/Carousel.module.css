@@ -1,0 +1,42 @@
+.Carousel {
+  width: 100%;
+}
+
+.Carousel :global(.slick-list) {
+  width: 100%;
+  margin: 0 -0.5rem;
+}
+
+.Carousel :global(.slick-track) {
+  display: flex;
+}
+
+.Carousel :global(.slick-slide) {
+  height: auto;
+  padding: 0 0.5rem;
+}
+
+.Carousel :global(.slick-slide > div) {
+  height: 100%;
+}
+
+/* Arrows */
+
+.Carousel :global(.slick-prev),
+.Carousel :global(.slick-next) {
+  z-index: 2;
+}
+
+.Carousel :global(.slick-prev) {
+  left: 0.5rem;
+}
+
+.Carousel :global(.slick-next) {
+  right: 0.5rem;
+}
+
+/* Dots */
+
+.Carousel :global(.slick-dots) {
+  bottom: 1rem;
+}

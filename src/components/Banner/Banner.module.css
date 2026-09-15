@@ -1,0 +1,377 @@
+.Banner {
+    position: relative;
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+
+    @apply my-8;
+}
+
+/* =========================
+   Image positions
+   ========================= */
+
+.Banner--left {
+    flex-direction: row;
+}
+
+.Banner--right {
+    flex-direction: row-reverse;
+}
+
+.Banner--top {
+    flex-direction: column;
+}
+
+.Banner--bottom {
+    flex-direction: column-reverse;
+}
+
+/* =========================
+   Image
+   ========================= */
+
+.Banner__image {
+    position: relative;
+    flex: 1 1 50%;
+    min-width: 0;
+    min-height: 300px;
+
+    @apply [mask-image:linear-gradient(to_right,transparent_0%,black_8%,black_92%,transparent_100%)];
+}
+
+.Banner__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* =========================
+   Content
+   ========================= */
+
+.Banner__content {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    flex: 1 1 50%;
+    flex-direction: column;
+    justify-content: center;
+
+    min-width: 0;
+    padding: 3rem;
+}
+
+.Banner__title {
+    margin: 0;
+
+    @apply text-4xl;
+    @apply font-bold;
+    @apply text-white;
+}
+
+.Banner__description {
+    margin-top: 1rem;
+
+    @apply text-white;
+}
+
+.Banner__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+/* =========================
+   Content alignment
+   ========================= */
+
+.Banner--align-left .Banner__content {
+    align-items: flex-start;
+    text-align: left;
+}
+
+.Banner--align-center .Banner__content {
+    align-items: center;
+    text-align: center;
+}
+
+.Banner--align-right .Banner__content {
+    align-items: flex-end;
+    text-align: right;
+}
+
+/* =========================
+   Background
+   ========================= */
+
+.Banner--background {
+    min-height: 500px;
+}
+
+.Banner__background {
+    position: absolute;
+    inset: 0;
+
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    filter: brightness(50%);
+}
+
+.Banner--background .Banner__content {
+    width: 100%;
+    flex: 1;
+}
+
+/* =========================
+   Overlay
+   ========================= */
+
+.Banner__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+
+    background: rgb(0 0 0 / 40%);
+}
+
+/* =========================
+   Heights - Desktop
+   ========================= */
+
+.Banner--small {
+    min-height: 300px;
+}
+
+.Banner--medium {
+    min-height: 450px;
+}
+
+.Banner--large {
+    min-height: 600px;
+}
+
+.Banner--auto {
+    min-height: auto;
+}
+
+/* =========================
+   Parallax
+   ========================= */
+
+.Banner--parallax .Banner__background {
+    background-attachment: fixed;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1024px) {
+    .Banner__content {
+        padding: 2.5rem;
+    }
+
+    .Banner__title {
+        @apply text-3xl;
+    }
+
+    .Banner--background {
+        min-height: 450px;
+    }
+
+    .Banner--large {
+        min-height: 500px;
+    }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+    .Banner {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /*
+     * Horizontal layouts become vertical.
+     * top/bottom keep their original direction.
+     */
+
+    .Banner--left,
+    .Banner--right {
+        flex-direction: column;
+    }
+
+    /* =========================
+       Image
+       ========================= */
+
+    .Banner__image {
+        flex: none;
+        width: 100%;
+        min-height: 220px;
+
+        /*
+         * Remove the horizontal fade on mobile.
+         * It is less useful when image and content
+         * are stacked vertically.
+         */
+        mask-image: none;
+    }
+
+    .Banner__image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* =========================
+       Content
+       ========================= */
+
+    .Banner__content {
+        flex: none;
+        width: 100%;
+        padding: 2rem 1.5rem;
+    }
+
+    .Banner__title {
+        @apply text-3xl;
+    }
+
+    .Banner__description {
+        margin-top: 0.75rem;
+    }
+
+    .Banner__actions {
+        gap: 0.75rem;
+        margin-top: 1.25rem;
+    }
+
+    /* =========================
+       Background
+       ========================= */
+
+    .Banner--background {
+        min-height: 400px;
+    }
+
+    .Banner--background .Banner__content {
+        padding: 2rem 1.5rem;
+    }
+
+    /*
+     * Fixed background attachment can cause
+     * performance/rendering issues on mobile.
+     */
+    .Banner--parallax .Banner__background {
+        background-attachment: scroll;
+    }
+
+    /* =========================
+       Heights
+       ========================= */
+
+    .Banner--small {
+        min-height: 220px;
+    }
+
+    .Banner--medium {
+        min-height: 350px;
+    }
+
+    .Banner--large {
+        min-height: 450px;
+    }
+
+    .Banner--auto {
+        min-height: auto;
+    }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+    .Banner {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    /* =========================
+       Image
+       ========================= */
+
+    .Banner__image {
+        min-height: 180px;
+    }
+
+    /* =========================
+       Content
+       ========================= */
+
+    .Banner__content {
+        padding: 1.5rem 1rem;
+    }
+
+    .Banner__title {
+        @apply text-2xl;
+    }
+
+    .Banner__description {
+        margin-top: 0.5rem;
+    }
+
+    /* =========================
+       Actions
+       ========================= */
+
+    .Banner__actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .Banner__actions > * {
+        width: 100%;
+    }
+
+    /* =========================
+       Background
+       ========================= */
+
+    .Banner--background {
+        min-height: 350px;
+    }
+
+    .Banner--background .Banner__content {
+        padding: 1.5rem 1rem;
+    }
+
+    /* =========================
+       Heights
+       ========================= */
+
+    .Banner--small {
+        min-height: 180px;
+    }
+
+    .Banner--medium {
+        min-height: 300px;
+    }
+
+    .Banner--large {
+        min-height: 380px;
+    }
+
+    .Banner--auto {
+        min-height: auto;
+    }
+}

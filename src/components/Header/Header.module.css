@@ -1,0 +1,71 @@
+.Header {
+    @apply flex;
+    @apply justify-between;
+    @apply items-center;
+    @apply h-20;
+    @apply px-8;
+    @apply bg-primary;
+    @apply border-b;
+    @apply border-brand;
+    @apply relative;
+}
+
+.logo {
+    @apply text-white;
+    @apply text-2xl;
+    @apply font-bold;
+}
+
+.nav {
+    @apply grid;
+    @apply grid-rows-4;
+    @apply absolute;
+    @apply top-16 right-6;
+    @apply bg-white;
+    @apply border rounded-md;
+    @apply p-4;
+    @apply w-[18rem];
+    @apply text-center;
+
+    @apply lg:static;
+    @apply lg:grid;
+    @apply lg:grid-cols-4;
+    @apply lg:gap-4;
+    @apply lg:bg-transparent;
+    @apply lg:border-none;
+    @apply lg:p-0;
+    @apply lg:w-auto;
+    @apply lg:grid-rows-1;
+}
+
+.link {
+    @apply text-primary;
+    @apply lg:text-white;
+    @apply hover:text-blue-300;
+    @apply transition-colors;
+    font-family: var(--font-dm-sans);
+}
+
+.button {
+    @apply flex items-center;
+    @apply gap-2;
+    @apply bg-tertiary;
+    @apply text-white;
+    @apply py-2 px-3;
+    @apply rounded-md;
+}
+
+.icon {
+    @apply size-4
+}
+
+.linkContact {
+    @apply hidden;
+    @apply lg:flex;
+}
+
+.barsIcon {
+    @apply lg:hidden;
+    @apply text-white;
+    @apply size-6;
+}

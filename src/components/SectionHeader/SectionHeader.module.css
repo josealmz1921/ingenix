@@ -1,0 +1,39 @@
+.header {
+  width: 100%;
+  margin-bottom: 32px;
+  @apply my-8;
+}
+
+.left {
+  text-align: left;
+}
+
+.center {
+  text-align: center;
+}
+
+.right {
+  text-align: right;
+}
+
+.title {
+  margin: 0;
+  @apply text-white;
+  @apply text-4xl
+}
+
+.description {
+  margin: 8px auto 0;
+  @apply text-white;
+  @apply font-light;
+  @apply mt-4;
+
+}
+
+.left .description {
+  margin-left: 0;
+}
+
+.right .description {
+  margin-left: auto;
+}

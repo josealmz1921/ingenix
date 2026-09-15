@@ -1,0 +1,273 @@
+.Hero {
+    position: relative;
+    display: flex;
+    width: 100%;
+    min-height: 600px;
+    overflow: hidden;
+}
+
+/* =========================
+   Background
+   ========================= */
+
+.background {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.backgroundImage {
+    object-fit: cover;
+    object-position: center;
+}
+
+/* =========================
+   Overlay
+   ========================= */
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+
+    background: #000;
+}
+
+/* =========================
+   Content
+   ========================= */
+
+.content {
+    position: relative;
+    z-index: 2;
+
+    width: 100%;
+    max-width: 1200px;
+
+    margin: 0 auto;
+    padding: 5rem 2rem;
+}
+
+/* =========================
+   Horizontal alignment
+   ========================= */
+
+.Hero--left .content {
+    text-align: left;
+}
+
+.Hero--center .content {
+    text-align: center;
+}
+
+.Hero--right .content {
+    text-align: right;
+}
+
+/* Left */
+
+.Hero--left .title,
+.Hero--left .description,
+.Hero--left .subtitle {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+.Hero--left .buttonContainer {
+    justify-content: flex-start;
+}
+
+/* Center */
+
+.Hero--center .title,
+.Hero--center .description,
+.Hero--center .subtitle {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.Hero--center .buttonContainer {
+    justify-content: center;
+}
+
+/* Right */
+
+.Hero--right .title,
+.Hero--right .description,
+.Hero--right .subtitle {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.Hero--right .buttonContainer {
+    justify-content: flex-end;
+}
+
+/* =========================
+   Content width
+   ========================= */
+
+.title {
+    max-width: 850px;
+
+    margin-top: 0;
+    margin-bottom: 1rem;
+
+    @apply text-5xl;
+    @apply font-bold;
+    @apply text-white;
+}
+
+.description {
+    max-width: 700px;
+
+    margin-top: 0;
+
+    @apply text-lg;
+    @apply font-light;
+    @apply text-white;
+}
+
+.subtitle {
+    max-width: 700px;
+
+    margin-top: 1.5rem;
+
+    @apply text-white;
+    @apply font-light;
+}
+
+/* =========================
+   Buttons
+   ========================= */
+
+.buttonContainer {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 1rem;
+
+    margin-top: 2rem;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.icon {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+/* =========================
+   Vertical alignment
+   ========================= */
+
+.Hero--top .content {
+    align-self: flex-start;
+}
+
+.Hero--center .content {
+    align-self: center;
+}
+
+.Hero--bottom .content {
+    align-self: flex-end;
+}
+
+/* =========================
+   Parallax
+   ========================= */
+
+.Hero--parallax .background {
+    transform: scale(1.08);
+}
+
+/* =========================
+   Tablet
+   ========================= */
+
+@media (max-width: 1024px) {
+    .Hero {
+        min-height: 520px;
+    }
+
+    .content {
+        padding: 4rem 2rem;
+    }
+
+    .title {
+        @apply text-4xl;
+    }
+
+    .description {
+        @apply text-base;
+    }
+}
+
+/* =========================
+   Mobile
+   ========================= */
+
+@media (max-width: 768px) {
+    .Hero {
+        min-height: 500px;
+    }
+
+    .content {
+        padding: 3.5rem 1.5rem;
+    }
+
+    .title {
+        margin-bottom: 0.75rem;
+
+        @apply text-3xl;
+    }
+
+    .description {
+        line-height: 1.6;
+    }
+
+    .buttonContainer {
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+    }
+
+    .Hero--parallax .background {
+        transform: scale(1.03);
+    }
+}
+
+/* =========================
+   Small mobile
+   ========================= */
+
+@media (max-width: 480px) {
+    .Hero {
+        min-height: 460px;
+    }
+
+    .content {
+        padding: 2.5rem 1rem;
+    }
+
+    .title {
+        @apply text-2xl;
+    }
+
+    .buttonContainer {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .subtitle {
+        margin-top: 1rem;
+    }
+}

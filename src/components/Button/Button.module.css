@@ -1,0 +1,26 @@
+.button {
+    @apply flex items-center;
+    @apply gap-2;
+    @apply py-2 px-3;
+    @apply rounded-sm;
+    @apply cursor-pointer;
+}
+
+.primary {
+    @apply button;
+    @apply bg-tertiary;
+    @apply text-white;
+}
+
+.secondary {
+    @apply button;
+    @apply border;
+    ;
+    @apply border-tertiary;
+    @apply text-tertiary;
+}
+
+.tertiary {
+    @apply button;
+    @apply text-white;
+}
