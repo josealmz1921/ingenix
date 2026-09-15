@@ -1,7 +1,7 @@
 import styles from './Progress.module.css';
 import type { ProgressProps } from './Progress.types';
 
-export function Progress({
+function Progress({
   value,
   max = 100,
   className = '',
@@ -26,3 +26,5 @@ export function Progress({
     </div>
   );
 }
+
+export default Progress;

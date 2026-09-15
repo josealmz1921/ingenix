@@ -1,7 +1,7 @@
 import styles from './SectionHeader.module.css';
 import type { SectionHeaderProps } from './SectionHeader.types';
 
-export function SectionHeader({
+function SectionHeader({
   title,
   description,
   align = 'center',
@@ -23,3 +23,5 @@ export function SectionHeader({
     </header>
   );
 }
+
+export default SectionHeader;

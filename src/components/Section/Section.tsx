@@ -1,7 +1,7 @@
 import styles from './Section.module.css';
 import type { SectionProps } from './Section.types';
 
-export function Section({
+function Section({
   children,
   container = true,
   className = '',
@@ -22,3 +22,5 @@ export function Section({
     </section>
   );
 }
+
+export default Section;

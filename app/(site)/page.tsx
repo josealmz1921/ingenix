@@ -4,11 +4,11 @@ import Carousel from "@/src/components/Carousel/Carousel";
 import Card from "@/src/components/Card/Card.lazy";
 import TextBlock from "@/src/components/TextBlock/TextBlock.lazy";
 
-import GridCard from '@/src/components/GridCard/GridCard';
-import { Progress } from '@/src/components/Progress/Progress';
-import { Grid } from '@/src/components/Grid/Grid';
-import { Section } from '@/src/components/Section/Section';
-import { SectionHeader } from '@/src/components/SectionHeader/SectionHeader';
+import GridCard from '@/src/components/GridCard/GridCard.lazy';
+import Progress from '@/src/components/Progress/Progress.lazy';
+import Grid from '@/src/components/Grid/Grid';
+import Section from '@/src/components/Section/Section.lazy';
+import SectionHeader from '@/src/components/SectionHeader/SectionHeader.lazy';
 import {
   CodeBracketIcon,
   ShieldCheckIcon,

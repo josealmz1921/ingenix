@@ -2,7 +2,7 @@ import { CSSProperties } from 'react';
 import styles from './Grid.module.css';
 import type { GridProps } from './Grid.types';
 
-export function Grid({
+function Grid({
   children,
   columns = 3,
   gap = 24,
@@ -21,3 +21,5 @@ export function Grid({
     </div>
   );
 }
+
+export default Grid;
