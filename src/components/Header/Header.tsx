@@ -1,61 +1,84 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
-import type { FC } from 'react';
-import styles from './Header.module.css';
-import Link from 'next/link';
-import { ArrowRightIcon, Bars3Icon } from '@heroicons/react/24/solid'
-import { useIsMobile } from '@/src/hooks/useIsMobile';
 
-interface HeaderProps { }
+import { useEffect, useRef, useState } from "react";
+import type { FC } from "react";
+import Link from "next/link";
+import { ArrowRightIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
+import styles from "./Header.module.css";
 
-const Header: FC<HeaderProps> = () => {
-
+const Header: FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const isMobile = useIsMobile(1024);
+  const headerRef = useRef<HTMLElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  useEffect(() => {
+    if (!isMenuOpen) return;
 
-  const useOutsideAlerter = (ref: any) => {
-    useEffect(() => {
-      function handleClickOutside(event: any) {
-        if (ref.current && !ref.current.contains(event.target)) {
-          setIsMenuOpen(false);
-        }
+    const closeOutside = (event: PointerEvent) => {
+      if (event.target instanceof Node && !headerRef.current?.contains(event.target)) {
+        setIsMenuOpen(false);
       }
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, [ref]);
-  }
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMenuOpen(false);
+        toggleRef.current?.focus();
+      }
+    };
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const closeOnDesktop = () => {
+      if (desktop.matches) setIsMenuOpen(false);
+    };
 
-  const wrapperRef = useRef(null);
-  useOutsideAlerter(wrapperRef);
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", closeOnEscape);
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => {
+      document.removeEventListener("pointerdown", closeOutside);
+      document.removeEventListener("keydown", closeOnEscape);
+      desktop.removeEventListener("change", closeOnDesktop);
+    };
+  }, [isMenuOpen]);
 
   return (
-    <div className={styles.Header}>
+    <header
+      ref={headerRef}
+      className={styles.Header}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setIsMenuOpen(false);
+      }}
+    >
       <div className={styles.logo}>Ingenix</div>
-      {
-        ((isMobile && isMenuOpen) || !isMobile) && (
-          <nav ref={wrapperRef} className={styles.nav}>
-            <Link className={styles.link} href="/">Servicios</Link>
-            <Link className={styles.link} href="/about">Soluciones</Link>
-            <Link className={styles.link} href="/contact">Proyectos</Link>
-            <Link className={styles.link} href="/contact">Proceso</Link>
-          </nav>
-        )
-      }
+      <button
+        ref={toggleRef}
+        type="button"
+        className={styles.menuToggle}
+        aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
+        aria-expanded={isMenuOpen}
+        aria-controls="header-navigation"
+        onClick={() => setIsMenuOpen((open) => !open)}
+      >
+        {isMenuOpen ? <XMarkIcon className={styles.barsIcon} /> : <Bars3Icon className={styles.barsIcon} />}
+      </button>
+      <nav
+        id="header-navigation"
+        aria-label="Navegación principal"
+        className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ""}`}
+        onClick={() => setIsMenuOpen(false)}
+      >
+        <Link className={styles.link} href="/">Servicios</Link>
+        <Link className={styles.link} href="/about">Soluciones</Link>
+        <Link className={styles.link} href="/contact">Proyectos</Link>
+        <Link className={styles.link} href="/contact">Proceso</Link>
+      </nav>
       <Link className={styles.linkContact} href="/contact">
-        <button className={styles.button}>
+        <span className={styles.button}>
           Hablar con un experto
           <ArrowRightIcon className={styles.icon} />
-        </button>
+        </span>
       </Link>
-      <Bars3Icon onClick={toggleMenu} className={styles.barsIcon} />
-    </div>
-  )
+    </header>
+  );
 };
 
 export default Header;

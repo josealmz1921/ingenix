@@ -1,3 +1,4 @@
+import styles from "./Home.module.css";
 import Banner from "@/src/components/Banner/Banner.lazy";
 import Hero from "@/src/components/Hero/Hero.lazy";
 import Carousel from "@/src/components/Carousel/Carousel";
@@ -302,47 +303,40 @@ export const hero: HeroProps = {
 
 export default function Home() {
   return (
-    <div className="px-4 md:px-8 lg:px-0">
+    <main className={styles.home}>
       <Hero
         {...hero}
       />
-      <br />
-      <div className="max-w-[1600px] mx-auto">
-        <br />
-        <br />
-        <TextBlock
-          align="center"
-          title="Soluciones digitales para hacer crecer tu negocio."
-          subtitle="Desde una primera idea hasta una plataforma completa, desarrollamos soluciones que se adaptan a la forma en que trabaja tu negocio."
-        />
-        <br />
-        <br />
-        <br />
-        <Carousel
-          slidesToShow={3}
-        >
-          <Card
-            variant="image-top"
-            title="Aplicaciones móviles"
-            image="/img/mobile_apps.jpg"
-            description="Creamos aplicaciones para Android y iOS enfocadas en ofrecer experiencias rápidas, intuitivas y conectadas con tu negocio."
+      <div className={styles.sections}>
+        <section className={styles.contentSection}>
+          <TextBlock
+            align="center"
+            title="Soluciones digitales para hacer crecer tu negocio."
+            subtitle="Desde una primera idea hasta una plataforma completa, desarrollamos soluciones que se adaptan a la forma en que trabaja tu negocio."
           />
-          <Card
-            variant="image-top"
-            title="Sitios y plataformas web"
-            image="/img/web_site.jpg"
-            description="Diseñamos y desarrollamos sitios web, plataformas y sistemas personalizados que combinan rendimiento, escalabilidad y una buena experiencia de usuario."
-          />
-          <Card
-            variant="image-top"
-            title="E-commerce"
-            image="/img/ecommerce.jpg"
-            description="Construimos tiendas online y experiencias de comercio electrónico con Shopify y otras tecnologías, desde la implementación hasta las integraciones necesarias."
-          />
-        </Carousel>
-        <br />
-        <br />
-        <br />
+          <Carousel
+            slidesToShow={3}
+          >
+            <Card
+              variant="image-top"
+              title="Aplicaciones móviles"
+              image="/img/mobile_apps.jpg"
+              description="Creamos aplicaciones para Android y iOS enfocadas en ofrecer experiencias rápidas, intuitivas y conectadas con tu negocio."
+            />
+            <Card
+              variant="image-top"
+              title="Sitios y plataformas web"
+              image="/img/web_site.jpg"
+              description="Diseñamos y desarrollamos sitios web, plataformas y sistemas personalizados que combinan rendimiento, escalabilidad y una buena experiencia de usuario."
+            />
+            <Card
+              variant="image-top"
+              title="E-commerce"
+              image="/img/ecommerce.jpg"
+              description="Construimos tiendas online y experiencias de comercio electrónico con Shopify y otras tecnologías, desde la implementación hasta las integraciones necesarias."
+            />
+          </Carousel>
+        </section>
         <Banner
           parallax
           contentAlign="center"
@@ -351,100 +345,94 @@ export default function Home() {
           title="Tu idea merece más que una plantilla."
           description="Analizamos lo que tu negocio necesita y construimos software pensado para tus procesos, tus usuarios y tus objetivos."
         />
-        <br />
-        <br />
-        <br />
-        <TextBlock
-          align="center"
-          title="De una idea a software que funciona."
-          subtitle="No empezamos escribiendo código. Primero entendemos el problema, definimos la solución y después construimos lo que realmente necesitas."
-        />
-        <Carousel
-          slidesToShow={4}
-        >
-          <Card
-            imageStyle="contain"
-            variant="image-top"
-            title="Descubrimos"
-            image="/img/one.png"
-            description="Entendemos tu negocio, tus procesos y el problema que quieres resolver."
+        <section className={styles.contentSection}>
+          <TextBlock
+            align="center"
+            title="De una idea a software que funciona."
+            subtitle="No empezamos escribiendo código. Primero entendemos el problema, definimos la solución y después construimos lo que realmente necesitas."
           />
-          <Card
-            imageStyle="contain"
-            variant="image-top"
-            title="Diseñamos"
-            image="/img/two.png"
-            description="Definimos la arquitectura, experiencia y funcionalidades necesarias para construir una solución sólida.."
-          />
-          <Card
-            imageStyle="contain"
-            variant="image-top"
-            title="Construimos"
-            image="/img/three.png"
-            description="Desarrollamos, integramos y probamos el software utilizando tecnologías modernas y prácticas de ingeniería."
-          />
-          <Card
-            imageStyle="contain"
-            variant="image-top"
-            title="Evolucionamos"
-            image="/img/four.png"
-            description="Publicamos, damos mantenimiento y seguimos mejorando el producto conforme crece tu negocio."
-          />
-        </Carousel>
-        <br />
-        <br />
-        <br />
-        <TextBlock
-          align="center"
-          title="¿Tienes una idea? Podemos construirla."
-          subtitle="No necesitas saber qué tecnología utilizar. Cuéntanos qué quieres lograr y nosotros nos encargamos de convertirlo en una solución digital."
-        />
-        <Carousel
-          slidesToShow={4}
-        >
-          {solutions.map((item) => (
+          <Carousel
+            slidesToShow={4}
+          >
             <Card
-              key={item.title}
-              variant="featured"
-              title={item.title}
-              image={item.img}
-              description={item.description}
-            />
-          ))}
-        </Carousel>
-        <br />
-        <br />
-        <br />
-        <TextBlock
-          align="center"
-          title="Construimos con empresas que quieren avanzar."
-        />
-        <Carousel
-          slidesToShow={4}
-        >
-          {audiences.map((item) => (
-            <Card
-              key={item.title}
+              imageStyle="contain"
               variant="image-top"
-              title={item.title}
-              image={item.img}
-              description={item.description}
+              title="Descubrimos"
+              image="/img/one.png"
+              description="Entendemos tu negocio, tus procesos y el problema que quieres resolver."
             />
-          ))}
-        </Carousel>
-        <br />
-        <br />
-        <br />
-        <Section>
+            <Card
+              imageStyle="contain"
+              variant="image-top"
+              title="Diseñamos"
+              image="/img/two.png"
+              description="Definimos la arquitectura, experiencia y funcionalidades necesarias para construir una solución sólida.."
+            />
+            <Card
+              imageStyle="contain"
+              variant="image-top"
+              title="Construimos"
+              image="/img/three.png"
+              description="Desarrollamos, integramos y probamos el software utilizando tecnologías modernas y prácticas de ingeniería."
+            />
+            <Card
+              imageStyle="contain"
+              variant="image-top"
+              title="Evolucionamos"
+              image="/img/four.png"
+              description="Publicamos, damos mantenimiento y seguimos mejorando el producto conforme crece tu negocio."
+            />
+          </Carousel>
+        </section>
+        <section className={styles.contentSection}>
+          <TextBlock
+            align="center"
+            title="¿Tienes una idea? Podemos construirla."
+            subtitle="No necesitas saber qué tecnología utilizar. Cuéntanos qué quieres lograr y nosotros nos encargamos de convertirlo en una solución digital."
+          />
+          <Carousel
+            slidesToShow={4}
+          >
+            {solutions.map((item) => (
+              <Card
+                key={item.title}
+                variant="featured"
+                title={item.title}
+                image={item.img}
+                description={item.description}
+              />
+            ))}
+          </Carousel>
+        </section>
+        <section className={styles.contentSection}>
+          <TextBlock
+            align="center"
+            title="Construimos con empresas que quieren avanzar."
+          />
+          <Carousel
+            slidesToShow={4}
+          >
+            {audiences.map((item) => (
+              <Card
+                key={item.title}
+                variant="image-top"
+                title={item.title}
+                image={item.img}
+                description={item.description}
+              />
+            ))}
+          </Carousel>
+        </section>
+        <Section container={false} className={styles.panel}>
           <SectionHeader
             title="Mucho más que desarrollo."
             description="El software no termina cuando se publica. También podemos ayudarte a integrarlo, protegerlo, optimizarlo y mantenerlo."
           />
-          <Grid columns={4} gap={12}>
+          <Grid columns={4} gap={24}>
             {capabilities.map((item) => (
-              <GridCard key={item.title}>
+              <GridCard key={item.title} className={styles.detailCard}>
                 <div>
-                  <span className="text-white">{item.icon}</span>
+                  <span className={styles.capabilityIcon}>{item.icon}</span>
                   <h3 className="text-white">{item.title}</h3>
                 </div>
                 <p className="text-white">
@@ -455,40 +443,36 @@ export default function Home() {
             ))}
           </Grid>
         </Section>
-        <br />
-        <br />
-        <br />
-        <TextBlock
-          align="center"
-          title="Ingeniería detrás de cada solución."
-          subtitle="No medimos un proyecto por la cantidad de código escrito. Nos enfocamos en construir software mantenible, seguro y preparado para evolucionar."
-        />
-        <Carousel
-          slidesToShow={3}
-          autoplay
-        >
-          {engineeringCapabilities.map((item) => (
-            <Card
-              key={item.title}
-              variant="image-left"
-              title={item.title}
-              image={item.img}
-              imageStyle="contain"
-              description={item.description}
-            />
-          ))}
-        </Carousel>
-        <br />
-        <br />
-        <br />
-        <Section>
+        <section className={styles.contentSection}>
+          <TextBlock
+            align="center"
+            title="Ingeniería detrás de cada solución."
+            subtitle="No medimos un proyecto por la cantidad de código escrito. Nos enfocamos en construir software mantenible, seguro y preparado para evolucionar."
+          />
+          <Carousel
+            slidesToShow={3}
+            autoplay
+          >
+            {engineeringCapabilities.map((item) => (
+              <Card
+                key={item.title}
+                variant="image-left"
+                title={item.title}
+                image={item.img}
+                imageStyle="contain"
+                description={item.description}
+              />
+            ))}
+          </Carousel>
+        </section>
+        <Section container={false} className={styles.panel}>
           <SectionHeader
             title="Experiencia adquirida en proyectos reales de alto impacto."
             description="Parte de nuestro trabajo profesional se ha desarrollado para empresas cuyos proyectos y activos digitales están sujetos a acuerdos de confidencialidad. Por respeto a nuestros clientes y sus contratos, no publicamos información privada ni material propietario. Sin embargo, podemos hablar de nuestra experiencia técnica y de los problemas que hemos resuelto."
           />
-          <Grid columns={3} gap={12}>
+          <Grid columns={3} gap={24}>
             {experience.map((item) => (
-              <GridCard key={item.title}>
+              <GridCard key={item.title} className={styles.detailCard}>
                 <div>
                   <h3 className="text-white">{item.title}</h3>
                 </div>
@@ -500,25 +484,18 @@ export default function Home() {
             ))}
           </Grid>
         </Section>
-        <br />
-        <br />
-        <br />
         <Banner
           contentAlign="center"
           image="/img/hero-image.jpg"
           imagePosition="left"
           title="¿Ya tienes un proyecto en mente?"
           description="Cuéntanos qué necesitas, qué problema quieres resolver o simplemente qué tienes en mente. Nosotros te ayudamos a definir el siguiente paso."
-          children={
-            <div>
-              <div className="flex justify-center"></div>
-              <Button type="button" priority="primary">
-                Cuéntanos tu proyecto
-              </Button>
-            </div>
-          }
-        />
+        >
+          <Button type="button" priority="primary" href="/contacto">
+            <span className="text-center w-full">Cuéntanos tu proyecto</span>
+          </Button>
+        </Banner>
       </div>
-    </div>
+    </main>
   );
 }

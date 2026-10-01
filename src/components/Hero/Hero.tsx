@@ -88,6 +88,7 @@ const Hero: FC<HeroProps> = ({
               <Button
                 key={action.label}
                 type="button"
+                href={action.href}
                 priority={action.priority ?? 'primary'}
                 classes={{
                   button: styles.button,

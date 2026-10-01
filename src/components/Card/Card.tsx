@@ -69,7 +69,7 @@ const Card = ({
           </div>
         )}
 
-        <div className={styles.Recommend}>
+        <div className={styles.text}>
           <h3 className={styles.title}>{title}</h3>
 
           {description && (

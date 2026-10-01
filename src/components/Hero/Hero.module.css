@@ -2,7 +2,12 @@
     position: relative;
     display: flex;
     width: 100%;
-    min-height: 600px;
+    min-height: 660px;
+    max-width: 1536px;
+    margin: 0 auto;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: 28px;
+    background: #161B2B;
     overflow: hidden;
 }
 
@@ -30,7 +35,7 @@
     inset: 0;
     z-index: 1;
 
-    background: #000;
+    background: linear-gradient(180deg, #0A0F1E 0%, transparent 45%, #0A0F1E 100%);
 }
 
 /* =========================
@@ -108,18 +113,22 @@
    ========================= */
 
 .title {
-    max-width: 850px;
+    max-width: 950px;
+    text-wrap: balance;
+    letter-spacing: -0.045em;
+    line-height: 1.08;
 
     margin-top: 0;
     margin-bottom: 1rem;
 
-    @apply text-5xl;
+    font-size: clamp(2.5rem, 5.5vw, 4.75rem);
     @apply font-bold;
     @apply text-white;
 }
 
 .description {
-    max-width: 700px;
+    max-width: 660px;
+    line-height: 1.75;
 
     margin-top: 0;
 
@@ -129,9 +138,10 @@
 }
 
 .subtitle {
-    max-width: 700px;
+    max-width: 660px;
+    line-height: 1.75;
 
-    margin-top: 1.5rem;
+    margin-top: 2rem;
 
     @apply text-white;
     @apply font-light;
@@ -147,13 +157,14 @@
 
     gap: 1rem;
 
-    margin-top: 2rem;
+    margin-top: 2.5rem;
 }
 
 .button {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    text-align: center;
 }
 
 .icon {
@@ -199,7 +210,7 @@
     }
 
     .title {
-        @apply text-4xl;
+        font-size: clamp(2.5rem, 5.5vw, 4rem);
     }
 
     .description {
@@ -223,7 +234,7 @@
     .title {
         margin-bottom: 0.75rem;
 
-        @apply text-3xl;
+        font-size: clamp(2.25rem, 6vw, 3.5rem);
     }
 
     .description {
@@ -232,7 +243,7 @@
 
     .buttonContainer {
         gap: 0.75rem;
-        margin-top: 1.5rem;
+        margin-top: 2rem;
     }
 
     .Hero--parallax .background {
@@ -254,7 +265,7 @@
     }
 
     .title {
-        @apply text-2xl;
+        font-size: 2.25rem;
     }
 
     .buttonContainer {

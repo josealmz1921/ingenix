@@ -1,0 +1,39 @@
+.home {
+  @apply px-4 pb-20 pt-4 sm:px-6 lg:px-8;
+}
+
+.sections {
+  @apply mx-auto flex w-full max-w-7xl flex-col;
+  gap: clamp(4rem, 7vw, 7rem);
+  padding-top: clamp(4rem, 7vw, 7rem);
+}
+
+.contentSection {
+  @apply min-w-0;
+}
+
+.panel {
+  @apply rounded-3xl border border-white/10 bg-secondary p-5 sm:p-8 lg:p-12;
+}
+
+.detailCard {
+  @apply flex h-full flex-col gap-5 rounded-2xl p-6;
+}
+
+.detailCard h3 {
+  @apply text-lg font-semibold;
+  line-height: 1.4;
+}
+
+.detailCard p {
+  @apply mb-0 text-sm text-white/70;
+  line-height: 1.8;
+}
+
+.detailCard > :last-child {
+  @apply mt-auto text-tertiary;
+}
+
+.capabilityIcon {
+  @apply mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-tertiary/10 text-tertiary;
+}

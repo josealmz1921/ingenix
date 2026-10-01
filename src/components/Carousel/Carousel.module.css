@@ -1,10 +1,11 @@
 .Carousel {
   width: 100%;
+  padding-bottom: 3.5rem;
 }
 
 .Carousel :global(.slick-list) {
   width: 100%;
-  margin: 0 -0.5rem;
+  margin: 0;
 }
 
 .Carousel :global(.slick-track) {
@@ -25,14 +26,28 @@
 .Carousel :global(.slick-prev),
 .Carousel :global(.slick-next) {
   z-index: 2;
+  top: auto;
+  bottom: -3.5rem;
+  width: 36px;
+  height: 36px;
+  transform: none;
+  border: 1px solid rgb(255 255 255 / 0.15);
+  border-radius: 50%;
+  background: #161B2B;
 }
 
 .Carousel :global(.slick-prev) {
-  left: 0.5rem;
+  left: auto;
+  right: 3.25rem;
 }
 
 .Carousel :global(.slick-next) {
   right: 0.5rem;
+}
+
+.Carousel :global(.slick-arrow:focus-visible) {
+  outline: 2px solid #1164FF;
+  outline-offset: 4px;
 }
 
 /* Dots */

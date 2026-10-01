@@ -1,26 +1,43 @@
 .button {
-    @apply flex items-center;
+    @apply inline-flex items-center justify-center;
     @apply gap-2;
-    @apply py-2 px-3;
-    @apply rounded-sm;
+    @apply min-h-12 py-3 px-6;
+    @apply rounded-xl font-medium;
     @apply cursor-pointer;
+    transition: background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.button:focus-visible {
+    outline: 2px solid #1164FF;
+    outline-offset: 4px;
 }
 
 .primary {
-    @apply button;
+    composes: button;
     @apply bg-tertiary;
     @apply text-white;
 }
 
 .secondary {
-    @apply button;
+    composes: button;
     @apply border;
-    ;
     @apply border-tertiary;
     @apply text-tertiary;
 }
 
 .tertiary {
-    @apply button;
+    composes: button;
     @apply text-white;
+}
+
+.primary:hover {
+    box-shadow: 0 8px 28px rgb(17 100 255 / 0.3);
+}
+
+.secondary:hover {
+    @apply bg-tertiary/10;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .button { transition: none; }
 }

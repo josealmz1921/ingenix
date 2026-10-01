@@ -1,9 +1,10 @@
 .card {
   display: flex;
+  height: 100%;
+  min-width: 0;
   overflow: hidden;
   border-radius: 20px;
-  /* background: #fff; */
-  /* border: 1px solid #e5e7eb; */
+  @apply bg-secondary border border-white/10;
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
@@ -49,7 +50,7 @@
 
 .description {
   margin: 0;
-  color: #6b7280;
+  color: rgb(255 255 255 / 0.7);
   line-height: 1.6;
 }
 
@@ -101,6 +102,7 @@
 .imageContain {
   composes: image;
   object-fit: contain;
+  padding: 24px;
 }
 
 .image-top .imageWrapper {
@@ -139,7 +141,7 @@
 
 .featured {
   position: relative;
-  min-height: 320px;
+  min-height: 380px;
 
   color: #fff;
 

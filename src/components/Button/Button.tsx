@@ -6,12 +6,17 @@ interface ButtonProps {
   classes?: {[key: string]: string};
   type: 'button' | 'submit' | 'reset';
   priority?: 'primary' | 'secondary' | 'tertiary';
+  href?: string;
 }
 
-const Button: FC<ButtonProps> = ({ children, classes, type, priority }) => (
-  <div className={styles[priority || 'primary']}>
-    {children}
-  </div>
-);
+const Button: FC<ButtonProps> = ({ children, classes, type, priority, href }) => {
+  const className = `${styles[priority || 'primary']} ${classes?.button ?? ''}`;
+
+  return href ? (
+    <a href={href} className={className}>{children}</a>
+  ) : (
+    <button type={type} className={className}>{children}</button>
+  );
+};
 
 export default Button;
