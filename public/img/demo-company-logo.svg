@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="40" viewBox="0 0 96 40">
+  <rect width="96" height="40" rx="4" fill="#ffffff"/>
+  <rect x="8" y="10" width="20" height="20" rx="4" fill="#172b48"/>
+  <path d="M13 24V16H18L23 20L18 24Z" fill="#89b9ff"/>
+  <text x="35" y="24" font-family="Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="1" fill="#172b48">DEMO</text>
+</svg>

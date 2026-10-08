@@ -22,8 +22,6 @@ const TextBlock = ({
   align = "left",
   className = "",
 }: TextBlockProps) => {
-  console.log('description',description);
-  
   return (
     <div
       className={`${styles.textBlock} ${styles[align]} ${className}`}
@@ -41,9 +39,9 @@ const TextBlock = ({
       )}
 
       {subtitle && (
-        <h3 className={styles.subtitle}>
+            <p className={styles.subtitle}>
           {subtitle}
-        </h3>
+            </p>
       )}
 
       {description && (

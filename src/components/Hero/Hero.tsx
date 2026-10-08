@@ -1,5 +1,3 @@
-'use client';
-
 import type { FC } from 'react';
 import Image from 'next/image';
 import { ArrowRightIcon } from '@heroicons/react/24/solid';
@@ -11,6 +9,7 @@ import styles from './Hero.module.css';
 import { HeroProps } from './HeroProps.types';
 
 const Hero: FC<HeroProps> = ({
+  eyebrow,
   title = 'Software que convierte ideas en soluciones reales.',
   description = 'Diseñamos y desarrollamos aplicaciones, sitios web, tiendas online y soluciones digitales a la medida de tu negocio.',
   subtitle = 'Desarrollo personalizado. Tecnología moderna. Sin soluciones genéricas.',
@@ -52,7 +51,7 @@ const Hero: FC<HeroProps> = ({
           src={image}
           alt={imageAlt}
           fill
-          priority
+          preload
           sizes="100vw"
           className={styles.backgroundImage}
         />
@@ -70,6 +69,7 @@ const Hero: FC<HeroProps> = ({
 
       {/* Content */}
       <div className={styles.content}>
+        {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}
         {title && (
           <h1 className={styles.title}>
             {title}

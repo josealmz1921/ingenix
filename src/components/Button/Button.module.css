@@ -21,8 +21,8 @@
 .secondary {
     composes: button;
     @apply border;
-    @apply border-tertiary;
-    @apply text-tertiary;
+    border-color: #789acb;
+    color: #c7dfff;
 }
 
 .tertiary {

@@ -5,14 +5,15 @@
 .container {
     @apply mx-auto grid w-full max-w-[1200px];
     @apply grid-cols-1 gap-12 px-6 py-16;
-    @apply md:grid-cols-2 lg:grid-cols-4 lg:gap-16;
+    @apply md:grid-cols-2 lg:grid-cols-3 lg:gap-16;
 }
 
 .brand {
     @apply lg:col-span-1;
 }
 
-.brand h2 {
+.brandName {
+    display: inline-block;
     @apply mb-4 text-2xl font-bold;
 }
 
@@ -24,7 +25,7 @@
     @apply flex flex-col items-start gap-3;
 }
 
-.column h3 {
+.column h2 {
     @apply mb-2 text-sm font-semibold uppercase tracking-wider;
 }
 

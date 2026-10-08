@@ -6,7 +6,11 @@ import Link from "next/link";
 import { ArrowRightIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import styles from "./Header.module.css";
 
-const Header: FC = () => {
+interface HeaderProps {
+  navigation?: { label: string; href: string }[];
+}
+
+const Header: FC<HeaderProps> = ({ navigation = [] }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -48,7 +52,7 @@ const Header: FC = () => {
         if (!event.currentTarget.contains(event.relatedTarget)) setIsMenuOpen(false);
       }}
     >
-      <div className={styles.logo}>Ingenix</div>
+      <Link href="/" className={styles.logo} aria-label="Ingenix, inicio">Ingenix<span className={styles.logoDot}>.</span></Link>
       <button
         ref={toggleRef}
         type="button"
@@ -66,14 +70,12 @@ const Header: FC = () => {
         className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ""}`}
         onClick={() => setIsMenuOpen(false)}
       >
-        <Link className={styles.link} href="/">Servicios</Link>
-        <Link className={styles.link} href="/about">Soluciones</Link>
-        <Link className={styles.link} href="/contact">Proyectos</Link>
-        <Link className={styles.link} href="/contact">Proceso</Link>
+        {navigation.map((item) => <Link key={item.href} className={styles.link} href={item.href}>{item.label}</Link>)}
+        <Link className={`${styles.link} ${styles.mobileContact}`} href="/#contacto">Contacto</Link>
       </nav>
-      <Link className={styles.linkContact} href="/contact">
+      <Link className={styles.linkContact} href="/#contacto">
         <span className={styles.button}>
-          Hablar con un experto
+          Hablemos de tu proyecto
           <ArrowRightIcon className={styles.icon} />
         </span>
       </Link>

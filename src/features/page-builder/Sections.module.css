@@ -1,0 +1,12 @@
+.anchor { scroll-margin-top: 6rem; }
+.section { max-width: 1200px; margin: 0 auto; padding: clamp(3.5rem, 7vw, 6rem) 0; }
+.section + .section { border-top: 1px solid rgb(255 255 255 / 0.09); }
+.heading { max-width: 760px; margin-left: 0; margin-bottom: 2.5rem; }
+.panel { padding: clamp(2rem, 5vw, 4rem); border-radius: 16px; background: #101b2d; border: 1px solid #23324a; }
+.card { border-radius: 12px; }
+.actions { display: flex; flex-wrap: wrap; gap: 1rem; }
+.note { margin: 2rem 0 0; max-width: 900px; color: #9fadc1; font-size: .875rem; line-height: 1.8; }
+.emptyProjects { display: flex; align-items: center; gap: 1.5rem; padding: 2rem; border: 1px solid #293951; border-radius: 12px; background: linear-gradient(120deg, #142238, #101827); }
+.emptyProjects p { max-width: 650px; color: #b8c5d6; line-height: 1.8; }
+.emptyIcon { display: grid; place-items: center; flex-shrink: 0; width: 56px; height: 56px; border: 1px solid #385377; border-radius: 12px; color: #83b4ff; font-size: 1.75rem; }
+@media (max-width: 640px) { .emptyProjects { align-items: flex-start; flex-direction: column; padding: 1.5rem; } }
