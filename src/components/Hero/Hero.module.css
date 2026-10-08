@@ -2,11 +2,11 @@
     position: relative;
     display: flex;
     width: 100%;
-    min-height: 660px;
-    max-width: 1536px;
+    min-height: 600px;
+    max-width: 1200px;
     margin: 0 auto;
     border: 1px solid rgb(255 255 255 / 0.1);
-    border-radius: 28px;
+    border-radius: 16px;
     background: #161B2B;
     overflow: hidden;
 }
@@ -35,7 +35,7 @@
     inset: 0;
     z-index: 1;
 
-    background: linear-gradient(180deg, #0A0F1E 0%, transparent 45%, #0A0F1E 100%);
+    background: linear-gradient(90deg, #0a1424 0%, #0a1424 25%, rgb(10 20 36 / .85) 58%, rgb(10 20 36 / .2) 100%);
 }
 
 /* =========================
@@ -50,7 +50,7 @@
     max-width: 1200px;
 
     margin: 0 auto;
-    padding: 5rem 2rem;
+    padding: 4.5rem clamp(1.5rem, 5vw, 4rem);
 }
 
 /* =========================
@@ -113,7 +113,7 @@
    ========================= */
 
 .title {
-    max-width: 950px;
+    max-width: 800px;
     text-wrap: balance;
     letter-spacing: -0.045em;
     line-height: 1.08;
@@ -121,7 +121,7 @@
     margin-top: 0;
     margin-bottom: 1rem;
 
-    font-size: clamp(2.5rem, 5.5vw, 4.75rem);
+    font-size: clamp(2.5rem, 4.6vw, 4.1rem);
     @apply font-bold;
     @apply text-white;
 }
@@ -133,7 +133,7 @@
     margin-top: 0;
 
     @apply text-lg;
-    @apply font-light;
+    font-weight: 400;
     @apply text-white;
 }
 
@@ -143,9 +143,11 @@
 
     margin-top: 2rem;
 
-    @apply text-white;
+    color: #b8c9df;
     @apply font-light;
 }
+
+.eyebrow { margin-bottom: 1.5rem; color: #9bc5ff; font-size: .8rem; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; }
 
 /* =========================
    Buttons

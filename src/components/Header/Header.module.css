@@ -6,8 +6,11 @@
     @apply px-8;
     @apply bg-primary;
     @apply border-b;
-    @apply border-brand;
-    @apply relative z-30;
+    border-color: rgb(255 255 255 / .1);
+    @apply sticky top-0 z-30;
+    padding-inline: max(1.5rem, calc((100vw - 1200px) / 2));
+    background: rgb(10 15 30 / .96);
+    backdrop-filter: blur(12px);
 }
 
 .logo {
@@ -15,6 +18,10 @@
     @apply text-2xl;
     @apply font-bold;
 }
+
+.logoDot { color: #77aaff; }
+.mobileContact { display: flex; }
+@media (min-width: 1024px) { .mobileContact { display: none; } }
 
 .nav {
     @apply absolute left-4 right-4 top-full hidden rounded-2xl border border-white/10 bg-secondary p-2;

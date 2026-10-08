@@ -6,6 +6,7 @@ export interface HeroAction {
 }
 
 export interface HeroProps {
+  eyebrow?: string;
   title?: string;
   description?: string;
   subtitle?: string;

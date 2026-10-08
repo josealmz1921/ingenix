@@ -1,4 +1,5 @@
 import React from "react";
+import Image from 'next/image';
 import styles from "./Card.module.css";
 
 export type CardVariant =
@@ -24,6 +25,10 @@ export interface CardProps {
 
   image?: string;
   imageAlt?: string;
+  eyebrow?: string;
+  company?: string;
+  logo?: string;
+  logoAlt?: string;
 
   icon?: React.ReactNode;
 
@@ -39,6 +44,10 @@ const Card = ({
   description,
   image,
   imageAlt = "",
+  eyebrow,
+  company,
+  logo,
+  logoAlt = '',
   icon,
   link,
   className = "",
@@ -54,15 +63,22 @@ const Card = ({
     >
       {image && (
         <div className={styles.imageWrapper}>
-          <img
+          <Image
             src={image}
             alt={imageAlt}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className={imageStyleClass}
           />
         </div>
       )}
 
       <div className={styles.content}>
+        {(company || logo) && <div className={styles.company}>
+          {logo && <Image src={logo} alt={logoAlt} width={96} height={40} className={styles.logo} />}
+          {company && <span>{company}</span>}
+        </div>}
+        {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}
         {icon && (
           <div className={styles.icon}>
             {icon}
