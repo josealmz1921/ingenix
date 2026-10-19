@@ -23,6 +23,8 @@
 # misc
 .DS_Store
 *.pem
+# Local MCP configuration can contain API keys and machine-specific paths.
+/opencode.json
 
 # debug
 npm-debug.log*
@@ -40,3 +42,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+opencode.json
