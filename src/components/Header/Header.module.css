@@ -1,36 +1,43 @@
 .Header {
-    @apply flex;
-    @apply justify-between;
-    @apply items-center;
-    @apply h-20;
-    @apply px-8;
-    @apply bg-primary;
-    @apply border-b;
-    border-color: rgb(255 255 255 / .1);
-    @apply sticky top-0 z-30;
-    padding-inline: max(1.5rem, calc((100vw - 1200px) / 2));
+    --header-height: 72px;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: var(--header-height);
+    padding-inline: clamp(1rem, 3vw, 1.5rem);
+    border-bottom: 1px solid rgb(255 255 255 / .1);
     background: rgb(10 15 30 / .96);
     backdrop-filter: blur(12px);
 }
 
 .logo {
-    @apply text-white;
-    @apply text-2xl;
-    @apply font-bold;
+    flex-shrink: 0;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 
 .logoDot { color: #77aaff; }
-.mobileContact { display: flex; }
-@media (min-width: 1024px) { .mobileContact { display: none; } }
 
 .nav {
-    @apply absolute left-4 right-4 top-full hidden rounded-2xl border border-white/10 bg-secondary p-2;
-    margin-top: 0.5rem;
-    box-shadow: 0 24px 60px rgb(0 0 0 / 0.4);
-    max-height: calc(100dvh - 6rem);
+    position: absolute;
+    top: calc(100% + .5rem);
+    right: 1rem;
+    display: none;
+    grid-template-columns: minmax(0, 1fr);
+    width: min(24rem, calc(100vw - 2rem));
+    max-height: calc(100dvh - var(--header-height) - 1.5rem);
     overflow-y: auto;
-
-    @apply lg:static lg:grid lg:grid-cols-4 lg:gap-4 lg:rounded-none lg:border-none lg:bg-transparent lg:p-0;
+    overscroll-behavior: contain;
+    padding: .5rem;
+    border: 1px solid rgb(255 255 255 / .1);
+    border-radius: 16px;
+    background: #161b2b;
+    box-shadow: 0 24px 60px rgb(0 0 0 / .4);
 }
 
 .navOpen {
@@ -39,26 +46,107 @@
 }
 
 .link {
-    @apply flex min-h-12 items-center rounded-xl px-4 py-3 text-white/80 transition-colors;
-    @apply hover:bg-white/5 hover:text-white;
-    @apply lg:min-h-0 lg:rounded-none lg:p-0 lg:text-white lg:hover:bg-transparent lg:hover:text-blue-300;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    min-height: 48px;
+    padding: .75rem 1rem;
+    border-radius: 10px;
+    color: rgb(255 255 255 / .85);
+    overflow-wrap: anywhere;
+    transition: color 180ms ease, background-color 180ms ease;
     font-family: var(--font-dm-sans);
 }
 
+.link:hover { background: rgb(255 255 255 / .05); color: white; }
+
+.mobileContact {
+    margin-top: .5rem;
+    border-top: 1px solid rgb(255 255 255 / .1);
+    color: #9bc5ff;
+}
+
 .menuToggle {
-    @apply inline-flex size-11 items-center justify-center rounded-xl border border-white/10 bg-secondary text-white lg:hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgb(255 255 255 / .1);
+    border-radius: 10px;
+    background: #161b2b;
+    color: white;
     transition: background-color 180ms ease, border-color 180ms ease;
 }
 
 .menuToggle:hover,
 .menuToggle[aria-expanded="true"] {
-    @apply border-tertiary/50 bg-tertiary/10;
+    border-color: #5588df;
+    background: rgb(17 100 255 / .1);
 }
 
 .menuToggle:focus-visible,
 .link:focus-visible {
-    outline: 2px solid #1164FF;
+    outline: 2px solid #9bc5ff;
     outline-offset: 2px;
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    min-height: 44px;
+    padding: .5rem 1rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    @apply bg-tertiary text-white;
+}
+
+.icon { width: 16px; height: 16px; flex-shrink: 0; }
+.barsIcon { width: 24px; height: 24px; }
+.linkContact { display: none; }
+
+@media (min-width: 1024px) {
+    .Header {
+        --header-height: 80px;
+        gap: clamp(1rem, 2vw, 2rem);
+        padding-inline: max(1.5rem, calc((100% - 1200px) / 2));
+    }
+
+    .nav,
+    .navOpen {
+        position: static;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(1rem, 2vw, 2rem);
+        flex: 1;
+        min-width: 0;
+        width: auto;
+        max-height: none;
+        overflow: visible;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        animation: none;
+    }
+
+    .link {
+        min-height: 44px;
+        padding: .5rem 0;
+        border-radius: 0;
+        white-space: nowrap;
+        overflow-wrap: normal;
+        font-size: .875rem;
+    }
+
+    .link:hover { background: transparent; color: #9bc5ff; }
+    .nav .mobileContact { display: none; }
+    .menuToggle { display: none; }
+    .linkContact { display: flex; flex-shrink: 0; font-size: .875rem; }
 }
 
 @keyframes reveal {
@@ -66,39 +154,7 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-@media (min-width: 1024px) {
-    .nav {
-        margin-top: 0;
-        box-shadow: none;
-        max-height: none;
-        overflow: visible;
-        animation: none;
-    }
-}
-
 @media (prefers-reduced-motion: reduce) {
     .navOpen { animation: none; }
     .menuToggle, .link { transition: none; }
-}
-
-.button {
-    @apply flex items-center;
-    @apply gap-2;
-    @apply bg-tertiary;
-    @apply text-white;
-    @apply py-2 px-3;
-    @apply rounded-md;
-}
-
-.icon {
-    @apply size-4
-}
-
-.linkContact {
-    @apply hidden;
-    @apply lg:flex;
-}
-
-.barsIcon {
-    @apply size-6;
 }
