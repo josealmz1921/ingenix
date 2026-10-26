@@ -1,4 +1,4 @@
-import type { PageSection } from '@/src/features/page-builder/types';
+import type { PageDocument, PageSection } from '@/src/page-builder/types/page';
 import { site } from './site';
 
 /** Serializable content: array order is display order. No JSX or component instances. */
@@ -125,3 +125,11 @@ export const homeSections: PageSection[] = [
 export const homeNavigation = homeSections
   .filter((section) => section.visible && section.navigationLabel)
   .map((section) => ({ label: section.navigationLabel!, href: `/#${section.id}` }));
+
+export const homePage: PageDocument = {
+  schemaVersion: 1,
+  id: 'inicio',
+  title: 'Inicio',
+  seo: { title: site.title, description: site.description },
+  sections: homeSections,
+};

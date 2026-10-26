@@ -1,4 +1,15 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ingenix y módulo de bloques reutilizables
+
+La portada usa el módulo autocontenido [`src/page-builder/`](src/page-builder/README.md). Esa carpeta contiene los bloques, variantes, estilos sin Tailwind, tema de Flor de luna, contrato JSON y validación necesarios para integrarlo con el administrador de `holistica`.
+
+- Página actual: `app/(site)/page.tsx`.
+- Contenido de Ingenix: `src/content/home.ts` y `src/content/site.ts`.
+- Módulo trasladable: `src/page-builder/` completo, sin copiar datos ni imágenes de clientes.
+- Comprobación del módulo: `npm run test:page-builder`.
+
+La interfaz del editor y su conexión a Firebase/Cloudinary se implementarán en el repositorio destino. Las rutas antiguas de componentes extraídos son reexportaciones de compatibilidad. Los ejemplos genéricos de componentes que aparecen más abajo no describen APIs adicionales ya implementadas.
+
+Proyecto creado con [Next.js](https://nextjs.org) y `create-next-app`.
 
 ## Getting Started
 
@@ -16,9 +27,9 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You can edit the homepage in `app/(site)/page.tsx` and its content in `src/content/home.ts`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project uses `next/font` to load Asap and DM Sans. The portable module inherits or accepts the host project's fonts.
 
 ## Learn More
 
@@ -468,36 +479,30 @@ sin tener que reconstruir la UI desde cero.
 
 ---
 
-## 15. Estructura recomendada
+## 15. Estructura actual
 
 ```text
+app/                           # Rutas y SEO, en la raíz
 src/
-├── app/
-│
-├── components/
-│   ├── ui/
-│   │   ├── Button/
-│   │   ├── Card/
-│   │   ├── Progress/
-│   │   └── ...
-│   │
-│   ├── layout/
-│   │   ├── Section/
-│   │   ├── Container/
-│   │   ├── Grid/
-│   │   └── ...
-│   │
-│   └── sections/
-│       ├── Hero/
-│       ├── Services/
-│       └── ...
-│
-├── data/
-│   ├── solutions.ts
-│   ├── industries.ts
-│   └── capabilities.ts
-│
-└── ...
+├── page-builder/              # Unidad trasladable a holistica
+│   ├── components/
+│   │   ├── ui/                # Button, Card, TextBlock
+│   │   ├── layout/            # Grid, Section
+│   │   └── blocks/            # Hero, Banner
+│   ├── renderer/
+│   ├── registry/
+│   ├── schemas/
+│   ├── types/
+│   ├── styles/
+│   ├── examples/
+│   ├── editor.ts
+│   └── index.ts
+├── content/                   # Datos propios de Ingenix
+├── components/                # Header/Footer, legacy y compatibilidad
+├── features/page-builder/     # Reexportaciones de compatibilidad
+└── hooks/
+public/img/                    # Imágenes del sitio, fuera del módulo
+tests/page-builder.test.mjs
 ```
 
 ## Comando principal
