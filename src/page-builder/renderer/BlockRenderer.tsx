@@ -3,6 +3,8 @@ import Button from '../components/ui/Button/Button';
 import Card from '../components/ui/Card/Card';
 import Grid from '../components/layout/Grid/Grid';
 import Hero from '../components/blocks/Hero/Hero';
+import Carousel from '../components/blocks/Carousel/Carousel';
+import ProgressIndicators from '../components/blocks/ProgressIndicators/ProgressIndicators';
 import Section from '../components/layout/Section/Section';
 import TextBlock from '../components/ui/TextBlock/TextBlock';
 import type { ActionContent, PageSection } from '../types/page';
@@ -121,6 +123,32 @@ export default function BlockRenderer({ section, renderText }: { section: PageSe
           </Grid>
           {(section.content.note || renderText) && <p className={styles.note}>{text('note', section.content.note ?? '')}</p>}
         </>
+      )}
+
+      {section.type === 'carousel' && (
+        <Carousel label={section.content.title} columns={section.columns}>
+          {section.content.items.map((item, index) => (
+            <Card
+              key={item.id}
+              renderText={renderText ? (path, value) => text(`items.${index}.${path}`, value) : undefined}
+              variant={section.variant}
+              title={item.title}
+              description={item.description}
+              image={item.image?.src}
+              imageAlt={item.image?.alt}
+              link={item.link}
+              className={styles.card}
+            />
+          ))}
+        </Carousel>
+      )}
+
+      {section.type === 'progress' && (
+        <ProgressIndicators
+          items={section.content.items}
+          variant={section.variant}
+          renderText={renderText ? text : undefined}
+        />
       )}
 
       {section.type === 'projects' && (

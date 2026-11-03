@@ -44,6 +44,19 @@ const contentFields: Record<BlockType, EditorField[]> = {
   text: [...headingFields, actions, { name: 'note', label: 'Nota', kind: 'textarea' }],
   banner: [...headingFields, { name: 'image', label: 'Imagen', kind: 'object', fields: imageFields }, actions],
   cards: [...headingFields, { name: 'items', label: 'Tarjetas', kind: 'list', fields: itemFields, required: true, max: 100 }, { name: 'note', label: 'Nota', kind: 'textarea' }],
+  carousel: [...headingFields, {
+    name: 'items', label: 'Diapositivas', kind: 'list', fields: itemFields,
+    required: true, min: 1, max: 30,
+  }],
+  progress: [...headingFields, {
+    name: 'items', label: 'Indicadores', kind: 'list', required: true, min: 1, max: 30,
+    fields: [
+      { name: 'id', label: 'Identificador', kind: 'text', required: true },
+      { name: 'title', label: 'Título del indicador', kind: 'text', required: true },
+      { name: 'value', label: 'Valor actual', kind: 'number', required: true, min: 0, max: 1000000 },
+      { name: 'max', label: 'Valor máximo', kind: 'number', required: true, min: 0.000001, max: 1000000 },
+    ],
+  }],
   projects: [...headingFields, {
     name: 'items', label: 'Proyectos', kind: 'list', required: true, max: 100,
     fields: [...itemFields.filter((field) => field.name !== 'image'),
@@ -62,7 +75,7 @@ export function getBlockFields(type: BlockType): EditorField[] {
     { name: 'variant', label: 'Variante', kind: 'select', required: true, options: blockRegistry[type].variants },
     { name: 'tone', label: 'Presentación', kind: 'select', options: ['plain', 'panel'] },
   ];
-  if (type === 'cards' || type === 'projects') fields.push({ name: 'columns', label: 'Columnas', kind: 'select', options: [1, 2, 3, 4], required: true });
+  if (type === 'cards' || type === 'projects' || type === 'carousel') fields.push({ name: 'columns', label: 'Columnas', kind: 'select', options: [1, 2, 3, 4], required: true });
   if (type === 'hero') fields.push({ name: 'settings', label: 'Presentación de portada', kind: 'object', fields: [
     { name: 'imageOpacity', label: 'Opacidad de imagen', kind: 'number', min: 0, max: 1 },
     { name: 'overlayOpacity', label: 'Opacidad de capa', kind: 'number', min: 0, max: 1 },

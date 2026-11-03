@@ -1,5 +1,1 @@
-export interface ProgressProps {
-  value: number;
-  max?: number;
-  className?: string;
-}
+export type { ProgressProps } from '../../page-builder/components/ui/Progress/Progress';

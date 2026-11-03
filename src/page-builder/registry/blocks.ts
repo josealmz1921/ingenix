@@ -5,6 +5,8 @@ export const blockRegistry = {
   banner: { label: 'Banner', variants: ['left', 'right', 'top', 'bottom', 'background'] },
   cards: { label: 'Tarjetas', variants: ['default', 'image-top', 'image-left', 'image-right', 'featured', 'compact'] },
   projects: { label: 'Proyectos', variants: ['image-top', 'image-left', 'image-right'] },
+  carousel: { label: 'Carrusel', variants: ['image-top', 'compact'] },
+  progress: { label: 'Indicadores de progreso', variants: ['default', 'compact'] },
 } as const;
 
 export type BlockType = keyof typeof blockRegistry;

@@ -6,6 +6,8 @@ export const blockDescriptions: Record<BlockType, string> = {
     banner: "Imagen y mensaje destacado",
     cards: "Colección de tarjetas editables",
     projects: "Galería con imágenes y enlaces",
+    carousel: "Tarjetas deslizables con imágenes y enlaces",
+    progress: "Indicadores con valores y máximos editables",
 };
 
 /** Gap is a position in the original array, including the position after its end. */

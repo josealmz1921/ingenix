@@ -12,6 +12,8 @@ import {
   PhotoIcon,
   Squares2X2Icon,
   WindowIcon,
+  ViewColumnsIcon,
+  ChartBarIcon,
 } from '@heroicons/react/24/outline';
 import { PageRenderer } from '@/src/page-builder';
 import { builderTheme } from './theme';
@@ -33,6 +35,8 @@ export function BlockIcon({ type }: { type: BlockType }) {
     banner: PhotoIcon,
     cards: Squares2X2Icon,
     projects: RectangleGroupIcon,
+    carousel: ViewColumnsIcon,
+    progress: ChartBarIcon,
   }[type];
   return (
     <Icon aria-hidden="true" />

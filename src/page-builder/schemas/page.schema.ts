@@ -45,6 +45,7 @@ export function validatePageDocument(input: unknown, options: ValidationOptions 
         output[field.name] = object(data, field.fields ?? [], fieldPath);
       } else if (field.kind === 'list') {
         if (!Array.isArray(data) || data.length > (field.max ?? 100)) { issue(fieldPath, 'Lista no válida o demasiado larga.'); continue; }
+        if (publishing && data.length < (field.min ?? 0)) issue(fieldPath, 'Agrega al menos un elemento antes de publicar.');
         output[field.name] = data.map((item, index) => object(item, field.fields ?? [], `${fieldPath}[${index}]`));
         const ids = new Set<string>();
         for (const item of data) {
@@ -96,6 +97,13 @@ export function validatePageDocument(input: unknown, options: ValidationOptions 
       if (!isObject(section) || typeof section.type !== 'string' || !Object.prototype.hasOwnProperty.call(blockRegistry, section.type)) { issue(path, 'Tipo de bloque no permitido.'); continue; }
       const parsed = object(section, getBlockFields(section.type as BlockType), path, ['type']);
       parsed.type = section.type;
+      if (section.type === 'progress' && isObject(parsed.content) && Array.isArray(parsed.content.items)) {
+        parsed.content.items.forEach((item, itemIndex) => {
+          if (isObject(item) && typeof item.value === 'number' && typeof item.max === 'number' && item.value > item.max) {
+            issue(`${path}.content.items[${itemIndex}].value`, 'El valor actual no puede superar el máximo.');
+          }
+        });
+      }
       if (typeof parsed.id === 'string') {
         if (ids.has(parsed.id)) issue(`${path}.id`, 'Identificador de bloque duplicado.');
         if (parsed.id === 'contenido') issue(`${path}.id`, 'Ancla reservada para el contenido principal.');

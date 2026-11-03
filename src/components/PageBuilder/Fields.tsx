@@ -45,9 +45,14 @@ export function blankFields(fields: readonly EditorField[]): Values {
               ? true
               : field.kind === 'select'
                 ? field.options?.[0]
-                : field.name === 'id'
-                  ? `item-${crypto.randomUUID()}`
-                  : '',
+                : field.kind === 'number'
+                  ? Math.min(
+                      field.max ?? Infinity,
+                      Math.max(field.min ?? 0, field.name === 'max' ? 100 : 0),
+                    )
+                  : field.name === 'id'
+                    ? `item-${crypto.randomUUID()}`
+                    : '',
       ]),
   );
 }

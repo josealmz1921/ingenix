@@ -9,9 +9,9 @@ Ingenix ahora incorpora también un host administrativo en `src/components/PageB
 ```text
 page-builder/
   components/
-    ui/             Button, Card y TextBlock
+    ui/             Button, Card, TextBlock y Progress
     layout/         Grid y Section
-    blocks/         Hero y Banner
+    blocks/         Hero, Banner, Carousel y ProgressIndicators
   renderer/         PageRenderer y BlockRenderer
   registry/         Catálogo, campos editables y creación de bloques
   schemas/          Validación de documentos y URLs
@@ -58,6 +58,13 @@ interface PageDocument {
 ```
 
 El orden del array determina el orden visual. Cada bloque tiene un `id` estable, `type`, `variant`, `visible` y `content`; puede añadir `navigationLabel` y `tone`. Las cuadrículas tienen `columns`. Los bloques de portada/banner permiten opciones de presentación mediante `settings`.
+
+### Carrusel e indicadores
+
+- `carousel`: tarjetas con título y descripción, e imagen y enlace opcionales, hasta 30 diapositivas. Variantes `image-top` y `compact`, y de 1 a 4 columnas en escritorio. El ancho del contenedor reduce las columnas en tablet y móvil. Usa scroll nativo, controles anterior/siguiente, teclado con flechas y foco visible, sin autoplay, clones ni dependencia de Slick. Las tarjetas permanecen accesibles mediante scroll sin JavaScript. Respeta la preferencia de movimiento reducido.
+- `progress`: hasta 30 indicadores con `id`, `title`, `value` y `max`. Variantes `default` (lista) y `compact` (dos columnas, una en móvil). Cada barra tiene nombre accesible y valores ARIA. Los valores deben ser números finitos, entre cero y el máximo; el máximo debe ser positivo y ambos están limitados a 1 000 000. Son datos editoriales, no métricas calculadas automáticamente.
+
+Ambos bloques permiten listas vacías en borrador, pero requieren al menos un elemento antes de publicar. El constructor puede insertar, duplicar, reordenar, ocultar y editar sus textos como los demás bloques. El host sigue controlando el Header y el Footer; estos bloques no los sustituyen ni se agregan automáticamente a una página publicada.
 
 Los datos no contienen JSX, funciones, clases CSS arbitrarias ni HTML enriquecido. React escapa los textos. El validador rechaza campos desconocidos y devuelve una copia sin propiedades `undefined`, apta para serialización. Los IDs de bloques y elementos deben ser únicos en su ámbito; `contenido` está reservado al enlace de accesibilidad del host.
 

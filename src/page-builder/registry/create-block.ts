@@ -12,5 +12,7 @@ export function createBlock(type: BlockType, id: string): PageSection {
     case 'banner': return { ...base, type, variant: 'right', content };
     case 'cards': return { ...base, type, variant: 'default', columns: 3, content: { ...content, items: [] } };
     case 'projects': return { ...base, type, variant: 'image-top', columns: 2, content: { ...content, items: [], emptyMessage: '' } };
+    case 'carousel': return { ...base, type, variant: 'image-top', columns: 3, content: { ...content, items: [] } };
+    case 'progress': return { ...base, type, variant: 'default', content: { ...content, items: [] } };
   }
 }

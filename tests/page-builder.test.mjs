@@ -106,7 +106,8 @@ test('all variants render; hidden blocks disappear; content remains escaped', ()
       block.variant = variant;
       block.content.description = 'Descripción de ejemplo';
       if (type === 'hero' || type === 'banner') block.content.image = { src: '/background.jpg', alt: '' };
-      if (type === 'cards') block.content.items = [{ id: 'tarjeta', title: 'Tarjeta', description: 'Contenido', image: { src: '/card.jpg', alt: 'Imagen' } }];
+      if (type === 'cards' || type === 'carousel') block.content.items = [{ id: 'tarjeta', title: 'Tarjeta', description: 'Contenido', image: { src: '/card.jpg', alt: 'Imagen' } }];
+      if (type === 'progress') block.content.items = [{ id: 'indicador', title: 'Avance', value: 40, max: 100 }];
       if (type === 'projects') {
         block.content.emptyMessage = 'Sin proyectos';
         block.content.items = [{ id: 'proyecto', title: 'Proyecto', description: 'Descripción', category: 'Web', company: 'Empresa', image: { src: '/demo.jpg', alt: 'Captura' }, logo: { src: '/logo.png', alt: 'Logo' }, link: { text: 'Visitar', href: 'https://example.com', target: '_blank' } }];
@@ -136,4 +137,67 @@ test('portable module has no external aliases, brand content, env or Tailwind di
     }
   }
   walk('src/page-builder');
+});
+
+test('carousel validates slides, columns, limits and safe URLs without requiring a slider dependency', () => {
+  const block = createBlock('carousel', 'galeria');
+  block.content.description = 'Una galería reutilizable';
+  const page = { ...copy(), sections: [copy().sections[0], block] };
+  assert.equal(validatePageDocument(page, { mode: 'draft' }).success, true);
+  assert.equal(validatePageDocument(page).success, false, 'an empty carousel cannot publish');
+  block.content.items = [
+    { id: 'primera', title: '<script>test</script>', description: 'Primera diapositiva', link: { text: 'Ver más', href: '/detalle' } },
+    { id: 'segunda', title: 'Segunda', description: 'Segunda diapositiva' },
+  ];
+  assert.equal(validatePageDocument(page).success, true);
+  const html = renderToStaticMarkup(React.createElement(PageRenderer, { document: page }));
+  assert.ok(html.includes('&lt;script&gt;test&lt;/script&gt;'));
+  assert.ok(html.includes('aria-label="Siguiente: Carrusel"'));
+  assert.ok(html.includes('aria-controls='));
+  assert.ok(html.includes('href="/detalle"'));
+  assert.ok(html.includes('tabindex="0"'));
+  for (const change of [
+    p => { p.sections[1].columns = 5; },
+    p => { p.sections[1].content.items[0].link.href = 'javascript:alert(1)'; },
+    p => { p.sections[1].content.items[0].image = { src: 'data:image/svg+xml,test', alt: '' }; },
+    p => { p.sections[1].content.items = Array.from({ length: 31 }, (_, i) => ({ id: `slide-${i}`, title: 'Slide', description: '' })); },
+  ]) {
+    const invalid = structuredClone(page);
+    change(invalid);
+    assert.equal(validatePageDocument(invalid).success, false);
+  }
+});
+
+test('progress validates numeric ranges and emits labelled accessible indicators', () => {
+  const block = createBlock('progress', 'avance');
+  block.content.description = 'Indicadores configurables';
+  const page = { ...copy(), sections: [copy().sections[0], block] };
+  assert.equal(validatePageDocument(page, { mode: 'draft' }).success, true);
+  assert.equal(validatePageDocument(page).success, false);
+  block.content.items = [{ id: 'implementacion', title: 'Implementación', value: 35, max: 50 }];
+  assert.equal(validatePageDocument(page).success, true);
+  const html = renderToStaticMarkup(React.createElement(PageRenderer, { document: page }));
+  assert.ok(html.includes('role="progressbar"'));
+  assert.ok(html.includes('aria-label="Implementación"'));
+  assert.ok(html.includes('aria-valuenow="35"'));
+  assert.ok(html.includes('aria-valuemax="50"'));
+  assert.ok(html.includes('width:70%'));
+  for (const [key, value] of [['value', -1], ['value', 51], ['value', '35'], ['value', NaN], ['max', 0], ['max', Infinity], ['max', 1000001]]) {
+    const invalid = structuredClone(page);
+    invalid.sections[1].content.items[0][key] = value;
+    assert.equal(validatePageDocument(invalid).success, false, `${key}: ${value}`);
+  }
+  const duplicate = structuredClone(page);
+  duplicate.sections[1].content.items.push(duplicate.sections[1].content.items[0]);
+  assert.equal(validatePageDocument(duplicate).success, false);
+});
+
+test('reusable progress clamps invalid runtime values without NaN, Infinity or inaccessible ARIA ranges', () => {
+  const { default: Progress } = load('src/page-builder/components/ui/Progress/Progress.tsx');
+  for (const props of [{ value: Infinity, max: 0 }, { value: -10, max: -1 }, { value: 200, max: 100 }]) {
+    const html = renderToStaticMarkup(React.createElement(Progress, props));
+    assert.ok(!/NaN|Infinity|width:-/.test(html));
+    assert.ok(html.includes('aria-valuemax="100"'));
+    assert.ok(html.includes(`aria-valuenow="${props.value === 200 ? 100 : 0}"`));
+  }
 });

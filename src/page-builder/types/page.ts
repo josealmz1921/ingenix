@@ -15,6 +15,12 @@ export interface ProjectContent extends CardContent {
   image: ImageContent;
   category: string;
 }
+export interface ProgressContent {
+  id: string;
+  title: string;
+  value: number;
+  max: number;
+}
 interface SectionBase<T extends BlockType> {
   id: string;
   type: T;
@@ -29,7 +35,9 @@ export type PageSection =
   | (SectionBase<'text'> & { content: HeadingContent & { actions?: ActionContent[]; note?: string } })
   | (SectionBase<'banner'> & { settings?: { height?: 'small' | 'medium' | 'large' | 'auto'; contentAlign?: 'left' | 'center' | 'right'; parallax?: boolean; overlay?: boolean }; content: HeadingContent & { image?: ImageContent; actions?: ActionContent[] } })
   | (SectionBase<'cards'> & { columns: 1 | 2 | 3 | 4; content: HeadingContent & { items: CardContent[]; note?: string } })
-  | (SectionBase<'projects'> & { columns: 1 | 2 | 3 | 4; content: HeadingContent & { items: ProjectContent[]; emptyMessage: string } });
+  | (SectionBase<'projects'> & { columns: 1 | 2 | 3 | 4; content: HeadingContent & { items: ProjectContent[]; emptyMessage: string } })
+  | (SectionBase<'carousel'> & { columns: 1 | 2 | 3 | 4; content: HeadingContent & { items: CardContent[] } })
+  | (SectionBase<'progress'> & { content: HeadingContent & { items: ProgressContent[] } });
 
 /** Storage contract; authentication and draft/public storage belong to the host. */
 export interface PageDocument {

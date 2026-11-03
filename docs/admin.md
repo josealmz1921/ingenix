@@ -47,6 +47,12 @@ Se muestran hasta 25 registros por catálogo, ordenados por identificador como e
 
 El lienzo y la vista previa privada del constructor siguen mostrando el documento local, no una mezcla con datos del catálogo; un aviso explica esta diferencia. Allí se editan los títulos, el diseño y la visibilidad de las secciones conectadas, no sus tarjetas públicas. La opción `PAGE_BUILDER_HOME_DISABLED` restaura la estructura de la plantilla, pero no desconecta los catálogos. Blog y empresa mantienen páginas propias; el perfil de empresa no sustituye automáticamente textos legales, correo o marca del encabezado/pie, que mantienen `src/content/site.ts` y las variables públicas.
 
+### Bloques reutilizables adicionales
+
+El catálogo del constructor ofrece **Carrusel** e **Indicadores de progreso**. El carrusel admite tarjetas con imágenes/enlaces, variantes con imagen superior o compacta y columnas responsivas. Los indicadores admiten títulos, valores actuales y máximos, en lista o presentación compacta. Ambos permiten hasta 30 elementos; una lista vacía se guarda como borrador, pero no se puede publicar. Los valores actuales de progreso no pueden superar su máximo ni ser negativos; no son métricas automáticas del negocio.
+
+Los textos se editan en el lienzo y los elementos, imágenes y números en el inspector. El carrusel se desplaza con controles, teclado o gesto táctil, sin reproducción automática ni dependencia de Slick. El componente antiguo `Progress` redirige a la implementación portable. No se elimina el carrusel antiguo ni se modifica el Header global. Estos bloques solo afectan al sitio al insertarlos, guardar el borrador y publicar explícitamente.
+
 ### Importar el contenido original al catálogo
 
 La migración usa exclusivamente las tarjetas de `servicios` y `proyectos` de `src/content/home.ts`. Conserva títulos, descripciones, imágenes, enlaces, empresas, logos y etiquetas. Crea los 6 servicios como publicados, Kaband y BienTasty como publicados y los otros 2 proyectos demo como borradores. No importa las tarjetas de experiencia, no inventa contenido de blog o empresa, y no cambia usuarios, permisos ni documentos del constructor.
