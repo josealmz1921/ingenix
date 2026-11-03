@@ -22,6 +22,7 @@ export function moveBlockToGap(sections: PageSection[], from: number, gap: numbe
 export function insertBlock(page: PageDocument, type: BlockType, index: number, id: string): PageDocument {
     if (page.sections.length >= 100) return page;
     const block = createBlock(type, id);
+    if (block.type === 'projects') block.catalog = { mode: 'all', items: [] };
     // Preserve a single visible H1, even when adding another portada.
     if (type === "hero" && page.sections.some(section => section.type === "hero" && section.visible)) block.visible = false;
     const sections = [...page.sections];

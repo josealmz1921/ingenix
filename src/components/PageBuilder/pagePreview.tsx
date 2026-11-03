@@ -9,6 +9,8 @@ import { PREVIEW_KEY, pageHomeErrors } from '@/src/utilities/pageBuilder';
 import Header from '@/src/components/Header/Header';
 import Footer from '@/src/components/Footer/Footer';
 import { builderTheme } from './theme';
+import { composeHomeCatalogs, normalizeHomeCatalogs } from '@/src/content/homeCatalogs';
+import { loadPageCatalogs } from './catalogRequest';
 
 export default function BuilderPreview() {
   const [document, setDocument] = useState<PageDocument | null>(null);
@@ -32,7 +34,16 @@ export default function BuilderPreview() {
             const result = validatePageDocument(JSON.parse(raw), { mode: 'draft' });
             if (!result.success || pageHomeErrors(result.data).length)
               throw new Error('El borrador no es válido para la vista previa.');
-            if (current === generation) setDocument(result.data);
+            const catalogs = await loadPageCatalogs();
+            if (current === generation) {
+              setDocument(
+                composeHomeCatalogs(
+                  normalizeHomeCatalogs(result.data),
+                  catalogs.services,
+                  catalogs.projects,
+                ),
+              );
+            }
           } catch (error) {
             if (current === generation)
               setMessage(

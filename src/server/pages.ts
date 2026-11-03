@@ -4,6 +4,7 @@ import { adminDb } from "./firebaseAdmin";
 import { ApiError, apiError, apiResponse, limitAdminRequests, readJson, requireAdmin } from "./adminApi";
 import { validatePageDocument } from "../page-builder/editor";
 import { pageHomeErrors } from "../utilities/pageBuilder";
+import { normalizeHomeCatalogs } from '../content/homeCatalogs';
 
 // Below Firestore's 1 MiB limit, including document envelope and field overhead.
 export const PAGE_MAX_BYTES = 256 * 1024;
@@ -15,7 +16,7 @@ export function validateStoredPage(input: unknown, mode: "draft" | "publish") {
     const imageErrors = pageHomeErrors(result.data);
     if (imageErrors.length) throw new ApiError(400, imageErrors.join(" "));
     if (Buffer.byteLength(JSON.stringify(result.data), "utf8") > PAGE_MAX_BYTES) throw new ApiError(413, "La página excede 256 KiB.");
-    return result.data;
+    return normalizeHomeCatalogs(result.data);
 }
 
 export async function getPageDraft(request: Request) {

@@ -12,7 +12,7 @@ export interface CardContent {
 export interface ProjectContent extends CardContent {
   company: string;
   logo?: ImageContent;
-  image: ImageContent;
+  image?: ImageContent;
   category: string;
 }
 export interface ProgressContent {
@@ -20,6 +20,10 @@ export interface ProgressContent {
   title: string;
   value: number;
   max: number;
+}
+export interface CatalogSelection {
+  mode: 'all' | 'selected' | 'static';
+  items: { recordId: string }[];
 }
 interface SectionBase<T extends BlockType> {
   id: string;
@@ -34,8 +38,8 @@ export type PageSection =
   | (SectionBase<'hero'> & { settings?: { imageOpacity?: number; overlayOpacity?: number; parallax?: boolean; verticalAlignment?: 'top' | 'center' | 'bottom' }; content: HeadingContent & { image?: ImageContent; subtitle?: string; actions: ActionContent[] } })
   | (SectionBase<'text'> & { content: HeadingContent & { actions?: ActionContent[]; note?: string } })
   | (SectionBase<'banner'> & { settings?: { height?: 'small' | 'medium' | 'large' | 'auto'; contentAlign?: 'left' | 'center' | 'right'; parallax?: boolean; overlay?: boolean }; content: HeadingContent & { image?: ImageContent; actions?: ActionContent[] } })
-  | (SectionBase<'cards'> & { columns: 1 | 2 | 3 | 4; content: HeadingContent & { items: CardContent[]; note?: string } })
-  | (SectionBase<'projects'> & { columns: 1 | 2 | 3 | 4; content: HeadingContent & { items: ProjectContent[]; emptyMessage: string } })
+  | (SectionBase<'cards'> & { catalog?: CatalogSelection; columns: 1 | 2 | 3 | 4; content: HeadingContent & { items: CardContent[]; note?: string } })
+  | (SectionBase<'projects'> & { catalog?: CatalogSelection; columns: 1 | 2 | 3 | 4; content: HeadingContent & { items: ProjectContent[]; emptyMessage: string } })
   | (SectionBase<'carousel'> & { columns: 1 | 2 | 3 | 4; content: HeadingContent & { items: CardContent[] } })
   | (SectionBase<'progress'> & { content: HeadingContent & { items: ProgressContent[] } });
 

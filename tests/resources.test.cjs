@@ -136,6 +136,13 @@ test('public readers return only valid published projections; unpublished direct
   assert.equal(await api.getPublicRecord('servicios', 'draft'), null);
   assert.equal(await api.getPublicRecord('servicios', '../draft'), null);
   assert.equal((await api.getPublicRecord('servicios', 'live')).document.title, 'Ingenix');
+  const catalog = await api.getPublishedCatalog('services');
+  assert.deepEqual(catalog.map(record => record.id), ['live']);
+  assert.doesNotMatch(JSON.stringify(catalog), /PRIVATE|updatedBy/);
+  for (let index = 0; index < 30; index++) {
+    store.set(`cms_services/service-${index}`, { document: document(true), revision: 1 });
+  }
+  assert.equal((await api.getPublishedCatalog('services')).length, 31);
 });
 
 test('public articles render stored markup as literal text, never executable HTML', () => {

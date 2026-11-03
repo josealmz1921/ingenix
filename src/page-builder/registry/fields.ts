@@ -60,9 +60,9 @@ const contentFields: Record<BlockType, EditorField[]> = {
   projects: [...headingFields, {
     name: 'items', label: 'Proyectos', kind: 'list', required: true, max: 100,
     fields: [...itemFields.filter((field) => field.name !== 'image'),
-      { name: 'image', label: 'Captura', kind: 'object', fields: imageFields, required: true },
-      { name: 'company', label: 'Empresa', kind: 'text', required: true },
-      { name: 'category', label: 'Categoría', kind: 'text', required: true },
+      { name: 'image', label: 'Captura', kind: 'object', fields: imageFields },
+      { name: 'company', label: 'Empresa', kind: 'text' },
+      { name: 'category', label: 'Categoría', kind: 'text' },
       { name: 'logo', label: 'Logo', kind: 'object', fields: imageFields }],
   }, { name: 'emptyMessage', label: 'Mensaje sin proyectos', kind: 'textarea', required: true }],
 };
@@ -76,6 +76,14 @@ export function getBlockFields(type: BlockType): EditorField[] {
     { name: 'tone', label: 'Presentación', kind: 'select', options: ['plain', 'panel'] },
   ];
   if (type === 'cards' || type === 'projects' || type === 'carousel') fields.push({ name: 'columns', label: 'Columnas', kind: 'select', options: [1, 2, 3, 4], required: true });
+  if (type === 'cards' || type === 'projects') fields.push({
+    name: 'catalog', label: 'Selección de catálogo', kind: 'object', fields: [
+      { name: 'mode', label: 'Origen de los elementos', kind: 'select', required: true, options: ['all', 'selected', 'static'] },
+      { name: 'items', label: 'Referencias ordenadas', kind: 'list', required: true, max: 100, fields: [
+        { name: 'recordId', label: 'Identificador del registro', kind: 'text', required: true, max: 100 },
+      ] },
+    ],
+  });
   if (type === 'hero') fields.push({ name: 'settings', label: 'Presentación de portada', kind: 'object', fields: [
     { name: 'imageOpacity', label: 'Opacidad de imagen', kind: 'number', min: 0, max: 1 },
     { name: 'overlayOpacity', label: 'Opacidad de capa', kind: 'number', min: 0, max: 1 },

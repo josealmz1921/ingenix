@@ -74,8 +74,8 @@ export default function ResourceEditor({ resource, id }: { resource: ResourceNam
           </label>
           <p>
             Desmarcar Publicado y guardar retira el contenido del sitio. Los servicios y proyectos
-            publicados alimentan también sus secciones de la portada. Su diseño y visibilidad se
-            editan en Páginas, sin copiar los registros al borrador.
+            publicados pueden mostrarse en la portada según la selección configurada en Páginas.
+            Allí se define su orden, diseño y visibilidad, sin copiar los registros al borrador.
           </p>
           <div className={styles.actions}>
             <button type="submit">

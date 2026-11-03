@@ -67,6 +67,13 @@ import {
 import styles from './builder.module.css';
 import { updateInlineText } from './inlineEditing';
 import { confirmBuilderAction, type BuilderConfirmation } from './confirmAction';
+import {
+  composeHomeCatalogs,
+  isCatalogSection,
+  normalizeHomeCatalogs,
+} from '@/src/content/homeCatalogs';
+import CatalogSelection from './CatalogSelection';
+import { usePageCatalogs } from './usePageCatalogs';
 
 async function request(method = 'GET', body?: unknown) {
   const response = await fetch('/api/admin/pages/home', {
@@ -201,6 +208,7 @@ const builderKeyboardCoordinates: KeyboardCoordinateGetter = (event, args) => {
 };
 
 export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor' }) {
+  const catalogState = usePageCatalogs(view === 'editor');
   const [document, setDocument] = useState<PageDocument>(initialPage);
   const [revision, setRevision] = useState(0);
   const [published, setPublished] = useState<number | null>(null);
@@ -242,8 +250,9 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
           const parsed = validatePageDocument(result.document, { mode: 'draft' });
           if (!parsed.success)
             throw new Error('El borrador guardado no es compatible con esta versión.');
-          setDocument(parsed.data);
-          setSaved(JSON.stringify(parsed.data));
+          const normalized = normalizeHomeCatalogs(parsed.data);
+          setDocument(normalized);
+          setSaved(JSON.stringify(normalized));
           setSelectedId(parsed.data.sections[0]?.id ?? null);
         } else {
           const template = initialPage();
@@ -279,7 +288,20 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
   const device = devices.find((item) => item.id === deviceId) || devices[0];
   const status =
     published === null ? 'Borrador' : revision === published ? 'Publicada' : 'Cambios sin publicar';
-  const selectedFields = selected ? getBlockFields(selected.type) : [];
+  const selectedFields = selected
+    ? getBlockFields(selected.type)
+        .filter((field) => field.name !== 'catalog')
+        .map((field) =>
+          field.name === 'content' && isCatalogSection(selected)
+            ? { ...field, fields: field.fields?.filter((item) => item.name !== 'items') }
+            : field,
+        )
+    : [];
+  const renderedDocument = composeHomeCatalogs(
+    document,
+    catalogState.catalogs.services,
+    catalogState.catalogs.projects,
+  );
   const currentIssues = issues.length ? issues : validation.success ? [] : validation.issues;
 
   useEffect(() => {
@@ -510,7 +532,6 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
         Cargando tu espacio de páginas…
       </div>
     );
-
   }
 
   if (view === 'list') {
@@ -620,8 +641,8 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
             </table>
           </div>
           <p className={styles.tableFooter}>
-            Guardar no cambia el sitio. Publicar actualiza la estructura y el SEO de la portada.
-            Las tarjetas de servicios y proyectos provienen de los registros publicados del admin.
+            Guardar no cambia el sitio. Publicar actualiza la estructura y el SEO de la portada. Las
+            tarjetas de servicios y proyectos provienen de los registros publicados del admin.
           </p>
         </section>
       </div>
@@ -631,10 +652,15 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
   return (
     <div className={`${styles.root} ${styles.editorRoot}`} style={builderTheme}>
       <p className={styles.notice}>
-        Las tarjetas de las secciones servicios y proyectos se reemplazan en el home por el catálogo
-        publicado. Administra sus registros en Servicios y Proyectos; aquí editas títulos, diseño y
-        visibilidad. El lienzo y la vista previa muestran las tarjetas locales del borrador.
+        Servicios y Proyectos son la fuente de sus textos e imágenes. En el inspector puedes mostrar
+        todos los publicados o seleccionarlos y ordenarlos. El lienzo y la vista previa usan esa
+        selección.
       </p>
+      {catalogState.error && (
+        <p role="alert" className={styles.error}>
+          {catalogState.error}
+        </p>
+      )}
       <header className={styles.editorHeader}>
         <div className={styles.pageContext}>
           <Link href="/dashboard/pages" aria-label="Volver a páginas">
@@ -825,7 +851,7 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
                       {document.sections.map((block, index) => (
                         <StructureBlock
                           key={block.id}
-                          block={block}
+                          block={renderedDocument.sections[index]}
                           index={index}
                           selected={block.id === selectedId}
                           disabled={disabled}
@@ -878,9 +904,9 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
                     return (
                       <div key={block.id}>
                         <SortableCanvasBlock
-                          block={block}
+                          block={renderedDocument.sections[index]}
                           index={index}
-                          page={document}
+                          page={renderedDocument}
                           selected={block.id === selectedId}
                           disabled={disabled}
                           scale={scale}
@@ -994,6 +1020,22 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
                   className={styles.inspectorFields}
                   key={selectedIndex}
                 >
+                  {(selected.type === 'cards' || selected.type === 'projects') && (
+                    <CatalogSelection
+                      section={selected}
+                      records={
+                        selected.type === 'cards'
+                          ? catalogState.catalogs.services
+                          : catalogState.catalogs.projects
+                      }
+                      loading={catalogState.loading}
+                      error={catalogState.error}
+                      onRefresh={() => {
+                        void catalogState.refresh();
+                      }}
+                      onChange={(section) => updateBlock(selectedIndex, section)}
+                    />
+                  )}
                   <div className={styles.variantPicker}>
                     <span className={styles.eyebrow}>Variante de diseño</span>
                     <div>

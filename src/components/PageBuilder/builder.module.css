@@ -12,6 +12,13 @@
     min-width: 0;
 }
 .editorRoot { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.catalogSelection { display: grid; gap: .8rem; padding: 1rem; border-bottom: 1px solid var(--admin-border); }
+.catalogSelection label { display: grid; gap: .5rem; color: var(--admin-muted); font-size: .75rem; }
+.catalogSelection select { width: 100%; min-width: 0; padding: .65rem; border: 1px solid var(--admin-border); border-radius: 6px; background: var(--admin-input); color: var(--admin-text); font: inherit; }
+.catalogSelection a { color: var(--admin-accent); text-decoration: underline; }
+.catalogReferences { display: grid; gap: .75rem; padding: 0; margin: 0; list-style: none; }
+.catalogReferences li { display: grid; gap: .5rem; padding: .7rem; border: 1px solid var(--admin-border); border-radius: 6px; background: var(--admin-raised); font-size: .75rem; overflow-wrap: anywhere; }
+.catalogReferences li > div { display: flex; flex-wrap: wrap; gap: .4rem; }
 .root *, .settingsDialog * { box-sizing: border-box; }
 .root button, .root input, .root select, .root textarea, .settingsDialog button { font: inherit; }
 .root button, .settingsDialog button { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; border: 1px solid var(--admin-border); border-radius: 7px; padding: .5rem .7rem; background: var(--admin-surface); color: inherit; cursor: pointer; font-size: .78rem; font-weight: 600; line-height: 1.5; }

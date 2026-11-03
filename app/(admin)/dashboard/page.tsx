@@ -34,9 +34,9 @@ export default function Dashboard() {
           })}
       </div>
       <p className={styles.notice}>
-        Los servicios y proyectos publicados aparecen automáticamente en sus secciones de la
-        portada y en sus páginas públicas. Los títulos, el diseño y la visibilidad de esas secciones
-        se administran desde Páginas. El blog y la empresa conservan sus páginas propias.
+        Servicios y Proyectos son la fuente de sus textos e imágenes. Desde Páginas puedes elegir
+        cuáles aparecen en la portada, ordenarlos y definir su diseño, sin duplicar contenido.
+        El blog y la empresa conservan sus páginas propias.
       </p>
     </main>
   );

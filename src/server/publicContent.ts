@@ -49,3 +49,11 @@ export const getPublicRecord = cache(async (section: PublicSection, id: string) 
   const snapshot = await resourceCollection(resource).doc(id).get();
   return snapshot.exists ? publicRecord(resource, id, snapshot.data()) : null;
 }, null));
+
+/** Whole published catalogue for curated home blocks, not only the first listing page. */
+export const getPublishedCatalog = cache(async (resource: 'services' | 'projects') => boundedRead(async () => {
+  const snapshot = await resourceCollection(resource).where('document.published', '==', true).orderBy('__name__').get();
+  return snapshot.docs
+    .map(doc => publicRecord(resource, doc.id, doc.data()))
+    .filter((record): record is ResourceRecord => record !== null);
+}, [] as ResourceRecord[]));

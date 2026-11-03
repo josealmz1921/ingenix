@@ -161,8 +161,8 @@ export default function BlockRenderer({ section, renderText }: { section: PageSe
                 variant={section.variant}
                 title={project.title}
                 description={project.description}
-                image={project.image.src}
-                imageAlt={project.image.alt}
+                image={project.image?.src}
+                imageAlt={project.image?.alt}
                 link={project.link}
                 company={project.company}
                 logo={project.logo?.src}

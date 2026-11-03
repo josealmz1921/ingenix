@@ -16,7 +16,9 @@ export function inlineTextFields(section: PageSection) {
         }
     }
     const content = getBlockFields(section.type).find(field => field.name === 'content');
-    visit(content?.fields || [], section.content as unknown as Record<string, unknown>, 'content');
+    const connected = (section.type === 'cards' || section.type === 'projects') && section.catalog && section.catalog.mode !== 'static';
+    const fields = (content?.fields || []).filter(field => !(connected && field.name === 'items'));
+    visit(fields, section.content as unknown as Record<string, unknown>, 'content');
     return result;
 }
 

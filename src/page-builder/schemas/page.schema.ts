@@ -97,6 +97,16 @@ export function validatePageDocument(input: unknown, options: ValidationOptions 
       if (!isObject(section) || typeof section.type !== 'string' || !Object.prototype.hasOwnProperty.call(blockRegistry, section.type)) { issue(path, 'Tipo de bloque no permitido.'); continue; }
       const parsed = object(section, getBlockFields(section.type as BlockType), path, ['type']);
       parsed.type = section.type;
+      if (isObject(parsed.catalog) && Array.isArray(parsed.catalog.items)) {
+        const references = new Set<string>();
+        parsed.catalog.items.forEach((item, itemIndex) => {
+          const id = isObject(item) ? item.recordId : undefined;
+          if (typeof id !== 'string' || id === 'new' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id) || references.has(id)) {
+            issue(`${path}.catalog.items[${itemIndex}].recordId`, 'Referencia de catálogo no válida o duplicada.');
+          }
+          if (typeof id === 'string') references.add(id);
+        });
+      }
       if (section.type === 'progress' && isObject(parsed.content) && Array.isArray(parsed.content.items)) {
         parsed.content.items.forEach((item, itemIndex) => {
           if (isObject(item) && typeof item.value === 'number' && typeof item.max === 'number' && item.value > item.max) {

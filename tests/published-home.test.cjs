@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const createLoader = require('./load-ts.cjs');
 
-test('Ingenix template is a fresh, publishable copy of the whole current homepage', () => {
+test('Ingenix template preserves the homepage structure with catalogue references instead of duplicate cards', () => {
   const load = createLoader();
   const { initialPage } = load('src/components/PageBuilder/initialPage.ts');
   const { homePage } = load('src/content/home.ts');
@@ -10,7 +10,8 @@ test('Ingenix template is a fresh, publishable copy of the whole current homepag
   const { pageHomeErrors } = load('src/utilities/pageBuilder.ts');
   const page = initialPage();
   assert.equal(page.id, 'home');
-  assert.deepEqual(page.sections, homePage.sections);
+  const { normalizeHomeCatalogs } = load('src/content/homeCatalogs.ts');
+  assert.deepEqual(page.sections, normalizeHomeCatalogs(homePage).sections);
   assert.deepEqual(pageHomeErrors(page), []);
   assert.equal(validatePageDocument(page, { mode: 'publish' }).success, true);
   page.sections[0].content.title = 'Local';

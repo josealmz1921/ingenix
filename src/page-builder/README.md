@@ -68,6 +68,8 @@ Ambos bloques permiten listas vacías en borrador, pero requieren al menos un el
 
 Los datos no contienen JSX, funciones, clases CSS arbitrarias ni HTML enriquecido. React escapa los textos. El validador rechaza campos desconocidos y devuelve una copia sin propiedades `undefined`, apta para serialización. Los IDs de bloques y elementos deben ser únicos en su ámbito; `contenido` está reservado al enlace de accesibilidad del host.
 
+Los bloques `cards` y `projects` admiten opcionalmente `catalog: { mode: 'all' | 'selected' | 'static', items: [{ recordId: 'identificador' }] }`. Son referencias ordenadas, no contenido duplicado; se validan hasta 100 IDs distintos. El host resuelve los datos publicados antes de pasar el documento al renderizador (el módulo portable nunca consulta APIs ni Firebase). Sin `catalog`, o con modo `static`, se mantienen las tarjetas locales. En Ingenix, `cards` conecta con Servicios y `projects` con Proyectos; el servidor vacía `content.items` al guardar bloques conectados y el compositor los resuelve únicamente para mostrarlos.
+
 ## Conectar el administrador existente
 
 ```ts
