@@ -2,11 +2,11 @@
 .background, .overlay { position: absolute; inset: 0; }
 .backgroundImage { object-fit: cover; object-position: center; }
 .overlay { z-index: 1; background: var(--pb-hero-overlay, linear-gradient(90deg, #0a1424, rgb(10 20 36 / .3))); }
-.content { position: relative; z-index: 2; width: 100%; margin: 0 auto; padding: 4.5rem clamp(1.5rem, 5vw, 4rem); }
+.content { position: relative; z-index: 2; width: 100%; margin: 0 auto; padding: 4.5rem clamp(1.5rem, 5cqw, 4rem); }
 .Hero--left .content { text-align: left; }
 .Hero--center .content { text-align: center; }
 .Hero--right .content { text-align: right; }
-.title { max-width: 800px; margin: 0 0 1rem; font-family: var(--pb-font-heading, inherit); text-wrap: balance; letter-spacing: -.045em; line-height: 1.08; font-size: clamp(2.5rem, 4.6vw, 4.1rem); font-weight: 700; }
+.title { max-width: 800px; margin: 0 0 1rem; font-family: var(--pb-font-heading, inherit); text-wrap: balance; letter-spacing: -.045em; line-height: 1.08; font-size: clamp(2.5rem, 4.6cqw, 4.1rem); font-weight: 700; }
 .description, .subtitle { max-width: 660px; margin: 0; line-height: 1.75; }
 .description { font-size: 1.125rem; }
 .subtitle { margin-top: 2rem; color: var(--pb-muted, #b8c9df); }
@@ -22,7 +22,7 @@
 .Hero--vertical-center .content { align-self: center; }
 .Hero--vertical-bottom .content { align-self: flex-end; }
 .Hero--parallax .background { transform: scale(1.08); }
-@media (max-width: 1024px) { .Hero { min-height: 520px; } }
-@media (max-width: 768px) { .Hero { min-height: 500px; } .content { padding: 3rem 1.5rem; } .title { font-size: clamp(2.25rem, 6vw, 3.5rem); } .description { font-size: 1rem; } }
-@media (max-width: 480px) { .content { padding: 2.5rem 1rem; } .buttonContainer { flex-direction: column; } .button { width: 100%; } }
+@container page-renderer (max-width: 1024px) { .Hero { min-height: 520px; } }
+@container page-renderer (max-width: 768px) { .Hero { min-height: 500px; } .content { padding: 3rem 1.5rem; } .title { font-size: clamp(2.25rem, 6cqw, 3.5rem); } .description { font-size: 1rem; } }
+@container page-renderer (max-width: 480px) { .content { padding: 2.5rem 1rem; } .buttonContainer { flex-direction: column; } .button { width: 100%; } }
 @media (prefers-reduced-motion: reduce) { .Hero--parallax .background { transform: none; } }

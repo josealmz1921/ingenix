@@ -1,3 +1,5 @@
+import type { TextRenderer } from '../../../types/render';
+
 export interface HeroAction {
   label: string;
   href?: string;
@@ -6,6 +8,7 @@ export interface HeroAction {
 }
 
 export interface HeroProps {
+  renderText?: TextRenderer;
   eyebrow?: string;
   title?: string;
   description?: string;

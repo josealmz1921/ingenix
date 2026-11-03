@@ -2,6 +2,8 @@
 
 Este directorio es la unidad que se traslada a `holistica`: copiar **todo `src/page-builder/`**. No copiar el contenido de Ingenix, Header/Footer, configuración de Firebase, variables privadas ni imágenes de clientes.
 
+Ingenix ahora incorpora también un host administrativo en `src/components/PageBuilder/` y `src/components/Admin/`, separado de este módulo. Su configuración y límites se documentan en [Administración](../../docs/admin.md). La portabilidad de esta carpeta no incluye credenciales, APIs ni persistencia.
+
 ## Estructura
 
 ```text
@@ -38,6 +40,8 @@ export default function Page() {
 ```
 
 El host conserva su Header, Footer y los márgenes exteriores. `PageRenderer` no añade otro `<main>`. En la vista previa del administrador utilizar el mismo componente con `mode="draft"`.
+
+`renderText(sectionId, path, value)` es un punto de extensión opcional del host para edición directa. Sin él, la salida pública solo contiene textos escapados, sin controles. Las reglas responsivas usan el contenedor del renderizador para que el lienzo simule escritorio/tablet/móvil sin depender del ancho real de la ventana.
 
 `florDeLunaTheme` utiliza los colores y las variables de fuente encontrados en `holistica/app/globals.css`: fondo crema, verdes, EB Garamond y Manrope. Las fuentes las carga el host; el módulo no descarga tipografías. El tema puede sobrescribirse con propiedades CSS `--pb-*` mediante `theme`, sin cambiar los componentes. El tema predeterminado mantiene la presentación oscura de este sitio.
 
@@ -89,7 +93,7 @@ La interfaz de arrastrar/soltar, los formularios, la persistencia y las subidas 
 ## Seguridad y publicación en holistica
 
 1. Separar almacenamiento de borradores y documentos publicados. No guardar ambos en un documento de lectura pública: Firestore entrega el documento completo.
-2. Mantener `admin: true` tanto en reglas como en APIs administrativas. La validación de este módulo no sustituye autorización ni reglas desplegadas.
+2. Exigir `admin: true` en las APIs administrativas y denegar escrituras cliente en las reglas cuando el host solo escriba desde servidor. La validación de este módulo no sustituye autorización ni reglas desplegadas.
 3. Validar de nuevo en el servidor al publicar. Si el navegador escribe directamente en Firestore, las reglas deben imponer las restricciones equivalentes; una validación de interfaz no es una barrera de seguridad.
 4. El lector público solo consulta la versión publicada. Nunca usar Admin SDK para exponer borradores accidentalmente.
 5. Publicar requiere una única portada visible (H1), al principio. Un borrador puede no tenerla todavía. Reutilizar Hero como sección intermedia requeriría un bloque de H2, no otra portada.

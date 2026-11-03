@@ -1,9 +1,11 @@
 import React from "react";
 import styles from "./TextBlock.module.css";
+import type { TextRenderer } from '../../../types/render';
 
 export type TextAlign = "left" | "center" | "right";
 
 export interface TextBlockProps {
+  renderText?: TextRenderer;
   eyebrow?: string;
   title?: string;
   subtitle?: string;
@@ -21,20 +23,21 @@ const TextBlock = ({
   description,
   align = "left",
   className = "",
+  renderText,
 }: TextBlockProps) => {
   return (
     <div
       className={`${styles.textBlock} ${styles[align]} ${className}`}
     >
-      {eyebrow && (
+      {(eyebrow || renderText) && (
         <span className={styles.eyebrow}>
-          {eyebrow}
+          {renderText ? renderText('eyebrow', eyebrow ?? '') : eyebrow}
         </span>
       )}
 
-      {title && (
+      {(title || renderText) && (
         <h2 className={styles.title}>
-          {title}
+          {renderText ? renderText('title', title ?? '') : title}
         </h2>
       )}
 
@@ -44,9 +47,9 @@ const TextBlock = ({
             </p>
       )}
 
-      {description && (
+      {(description || renderText) && (
         <p className={styles.description}>
-          {description}
+          {renderText ? renderText('description', description ?? '') : description}
         </p>
       )}
     </div>

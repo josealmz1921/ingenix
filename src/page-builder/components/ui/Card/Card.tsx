@@ -1,6 +1,7 @@
 import React from "react";
 import Image from 'next/image';
 import styles from "./Card.module.css";
+import type { TextRenderer } from '../../../types/render';
 
 export type CardVariant =
   | "default"
@@ -17,6 +18,7 @@ export interface CardLink {
 }
 
 export interface CardProps {
+  renderText?: TextRenderer;
   variant?: CardVariant;
   imageStyle?: "cover" | "contain";
 
@@ -52,7 +54,8 @@ const Card = ({
   link,
   className = "",
   children,
-  imageStyle
+  imageStyle,
+  renderText,
 }: CardProps) => {
 
   const imageStyleClass = imageStyle === "contain" ? styles.imageContain : styles.imageCover;
@@ -74,11 +77,11 @@ const Card = ({
       )}
 
       <div className={styles.content}>
-        {(company || logo) && <div className={styles.company}>
+        {(company || logo || (renderText && company !== undefined)) && <div className={styles.company}>
           {logo && <Image src={logo} alt={logoAlt} width={96} height={40} className={styles.logo} />}
-          {company && <span>{company}</span>}
+          {(company || (renderText && company !== undefined)) && <span>{renderText ? renderText('company', company ?? '') : company}</span>}
         </div>}
-        {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}
+        {(eyebrow || (renderText && eyebrow !== undefined)) && <p className={styles.eyebrow}>{renderText ? renderText('category', eyebrow ?? '') : eyebrow}</p>}
         {icon && (
           <div className={styles.icon}>
             {icon}
@@ -86,11 +89,11 @@ const Card = ({
         )}
 
         <div className={styles.text}>
-          <h3 className={styles.title}>{title}</h3>
+          <h3 className={styles.title}>{renderText ? renderText('title', title) : title}</h3>
 
-          {description && (
+          {(description || renderText) && (
             <p className={styles.description}>
-              {description}
+              {renderText ? renderText('description', description ?? '') : description}
             </p>
           )}
 
@@ -104,7 +107,7 @@ const Card = ({
             rel={link.target === "_blank" ? "noopener noreferrer" : undefined}
             className={styles.link}
           >
-            {link.text}
+            {renderText ? renderText('link.text', link.text) : link.text}
             <span aria-hidden="true">→</span>
           </a>
         )}

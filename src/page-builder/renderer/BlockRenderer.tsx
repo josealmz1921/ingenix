@@ -7,28 +7,30 @@ import Section from '../components/layout/Section/Section';
 import TextBlock from '../components/ui/TextBlock/TextBlock';
 import type { ActionContent, PageSection } from '../types/page';
 import styles from '../styles/Sections.module.css';
+import type { TextRenderer } from '../types/render';
 
-function Actions({ actions }: { actions?: ActionContent[] }) {
+function Actions({ actions, renderText }: { actions?: ActionContent[]; renderText?: TextRenderer }) {
   if (!actions?.length) return null;
 
   return (
     <div className={styles.actions}>
-      {actions.map((action) => (
+      {actions.map((action, index) => (
         <Button
-          key={action.label}
+          key={index}
           type="button"
           href={action.href}
           priority={action.priority}
         >
-          {action.label}
+          {renderText ? renderText(`actions.${index}.label`, action.label) : action.label}
         </Button>
       ))}
     </div>
   );
 }
 
-export default function BlockRenderer({ section }: { section: PageSection }) {
+export default function BlockRenderer({ section, renderText }: { section: PageSection; renderText?: TextRenderer }) {
   if (!section.visible) return null;
+  const text: TextRenderer = (path, value) => renderText ? renderText(`content.${path}`, value) : value;
 
   if (section.type === 'hero') {
     const { content } = section;
@@ -36,6 +38,7 @@ export default function BlockRenderer({ section }: { section: PageSection }) {
     return (
       <div id={section.id} className={`${styles.anchor} ${section.tone === 'panel' ? styles.panel : ''}`}>
         <Hero
+          renderText={renderText ? text : undefined}
           title={content.title}
           eyebrow={content.eyebrow}
           description={content.description}
@@ -62,14 +65,14 @@ export default function BlockRenderer({ section }: { section: PageSection }) {
           imagePosition={section.variant}
           image={content.image?.src}
           imageAlt={content.image?.alt}
-          title={content.title}
-          description={content.description}
+          title={text('title', content.title)}
+          description={text('description', content.description)}
           height={section.settings?.height}
           contentAlign={section.settings?.contentAlign}
           parallax={section.settings?.parallax}
           overlay={section.settings?.overlay}
         >
-          <Actions actions={content.actions} />
+          <Actions actions={content.actions} renderText={renderText ? text : undefined} />
         </Banner>
       </div>
     );
@@ -83,6 +86,7 @@ export default function BlockRenderer({ section }: { section: PageSection }) {
       className={`${styles.section} ${styles.anchor} ${section.tone === 'panel' ? styles.panel : ''}`}
     >
       <TextBlock
+        renderText={renderText ? text : undefined}
         eyebrow={section.content.eyebrow}
         title={section.content.title}
         description={section.content.description}
@@ -92,8 +96,8 @@ export default function BlockRenderer({ section }: { section: PageSection }) {
 
       {section.type === 'text' && (
         <>
-          <Actions actions={section.content.actions} />
-          {section.content.note && <p className={styles.note}>{section.content.note}</p>}
+          <Actions actions={section.content.actions} renderText={renderText ? text : undefined} />
+          {(section.content.note || renderText) && <p className={styles.note}>{text('note', section.content.note ?? '')}</p>}
         </>
       )}
 
@@ -103,6 +107,7 @@ export default function BlockRenderer({ section }: { section: PageSection }) {
             {section.content.items.map((item, index) => (
               <Card
                 key={item.id}
+                renderText={renderText ? (path, value) => path === 'category' ? value : text(`items.${index}.${path}`, value) : undefined}
                 variant={section.variant}
                 title={item.title}
                 description={item.description}
@@ -114,16 +119,17 @@ export default function BlockRenderer({ section }: { section: PageSection }) {
               />
             ))}
           </Grid>
-          {section.content.note && <p className={styles.note}>{section.content.note}</p>}
+          {(section.content.note || renderText) && <p className={styles.note}>{text('note', section.content.note ?? '')}</p>}
         </>
       )}
 
       {section.type === 'projects' && (
         section.content.items.length ? (
           <Grid columns={section.columns} gap={28}>
-            {section.content.items.map((project) => (
+            {section.content.items.map((project, index) => (
               <Card
                 key={project.id}
+                renderText={renderText ? (path, value) => text(`items.${index}.${path}`, value) : undefined}
                 variant={section.variant}
                 title={project.title}
                 description={project.description}
@@ -141,7 +147,7 @@ export default function BlockRenderer({ section }: { section: PageSection }) {
         ) : (
           <div className={styles.emptyProjects}>
             <span className={styles.emptyIcon} aria-hidden="true">↗</span>
-            <p>{section.content.emptyMessage}</p>
+            <p>{text('emptyMessage', section.content.emptyMessage)}</p>
           </div>
         )
       )}

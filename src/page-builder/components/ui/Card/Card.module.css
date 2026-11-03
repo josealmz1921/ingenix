@@ -28,7 +28,7 @@
 .compact .text { flex: 1; min-width: min(180px, 100%); }
 .compact .description { font-size: .9rem; }
 .compact .link { margin-top: 0; }
-@media (max-width: 768px) {
+@container page-renderer (max-width: 768px) {
   .image-left, .image-right, .compact { flex-direction: column; }
   .image-left .imageWrapper, .image-right .imageWrapper { width: 100%; height: 220px; }
   .compact .content { flex-direction: column; align-items: flex-start; }

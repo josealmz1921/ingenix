@@ -27,6 +27,7 @@ const Hero: FC<HeroProps> = ({
   overlayOpacity = 0.35,
 
   actions = [],
+  renderText,
 }) => {
   const heroClassName = [
     styles.Hero,
@@ -68,24 +69,24 @@ const Hero: FC<HeroProps> = ({
 
       {/* Content */}
       <div className={styles.content}>
-        {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}
-        {title && (
+        {(eyebrow || renderText) && <p className={styles.eyebrow}>{renderText ? renderText('eyebrow', eyebrow ?? '') : eyebrow}</p>}
+        {(title || renderText) && (
           <h1 className={styles.title}>
-            {title}
+            {renderText ? renderText('title', title ?? '') : title}
           </h1>
         )}
 
-        {description && (
+        {(description || renderText) && (
           <p className={styles.description}>
-            {description}
+            {renderText ? renderText('description', description ?? '') : description}
           </p>
         )}
 
         {actions.length > 0 && (
           <div className={styles.buttonContainer}>
-            {actions.map((action) => (
+            {actions.map((action, index) => (
               <Button
-                key={action.label}
+                key={index}
                 type="button"
                 href={action.href}
                 priority={action.priority ?? 'primary'}
@@ -93,7 +94,7 @@ const Hero: FC<HeroProps> = ({
                   button: styles.button,
                 }}
               >
-                {action.label}
+                {renderText ? renderText(`actions.${index}.label`, action.label) : action.label}
 
                 {action.showIcon && (
                   <span aria-hidden="true">→</span>
@@ -103,9 +104,9 @@ const Hero: FC<HeroProps> = ({
           </div>
         )}
 
-        {subtitle && (
+        {(subtitle || renderText) && (
           <p className={styles.subtitle}>
-            {subtitle}
+            {renderText ? renderText('subtitle', subtitle ?? '') : subtitle}
           </p>
         )}
       </div>
