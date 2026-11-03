@@ -38,5 +38,6 @@ export function validateResource(resource: ResourceName, input: unknown): Resour
     result[field.key] = text;
   }
   if (result.image && !result.imageAlt) throw new ApiError(400, 'Describe la imagen para accesibilidad.');
+  if (result.logo && !result.logoAlt) throw new ApiError(400, 'Describe el logo para accesibilidad.');
   return result;
 }

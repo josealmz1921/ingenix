@@ -43,9 +43,27 @@ Los catálogos son independientes: su opción **Publicado** determina visibilida
 
 **Las tarjetas de servicios y proyectos de la portada se alimentan del catálogo publicado.** `src/server/homeContent.ts` combina la portada publicada (o la plantilla) con los lectores públicos validados. `src/content/homeCatalogs.ts` reemplaza los elementos de la sección `servicios` de tipo `cards` y de `proyectos` de tipo `projects`, sin duplicarlos ni escribir en Firestore. Conserva encabezados, variantes, columnas, orden y visibilidad del constructor. No crea secciones que hayas eliminado ni conecta bloques con otros identificadores.
 
-Se muestran hasta 25 registros por catálogo, ordenados por identificador como en sus páginas públicas; las listas `/servicios` y `/proyectos` mantienen su paginación. Cada tarjeta enlaza al detalle público, donde se conserva el enlace externo del registro. Las imágenes son opcionales: sin imagen no se inventa una; tampoco se inventan empresas, logos ni etiquetas de categoría. Guardar un registro publicado actualiza su tarjeta al recargar el home, y despublicarlo o eliminarlo la retira sin volver a mostrar ejemplos estáticos. Si no hay registros publicados o falla la lectura, las tarjetas quedan vacías (sin exponer borradores).
+Se muestran hasta 25 registros por catálogo, ordenados por identificador como en sus páginas públicas; las listas `/servicios` y `/proyectos` mantienen su paginación. Cada tarjeta enlaza al detalle público, donde se conserva el enlace externo del registro. Las imágenes son opcionales: sin imagen no se inventa una; tampoco se inventan empresas, logos ni etiquetas de categoría. Los proyectos incluyen campos opcionales de empresa, etiqueta visible, logo y descripción del logo; sus imágenes siguen la misma política de orígenes y accesibilidad. Guardar un registro publicado actualiza su tarjeta al recargar el home, y despublicarlo o eliminarlo la retira sin volver a mostrar ejemplos estáticos. Si no hay registros publicados o falla la lectura, las tarjetas quedan vacías (sin exponer borradores).
 
 El lienzo y la vista previa privada del constructor siguen mostrando el documento local, no una mezcla con datos del catálogo; un aviso explica esta diferencia. Allí se editan los títulos, el diseño y la visibilidad de las secciones conectadas, no sus tarjetas públicas. La opción `PAGE_BUILDER_HOME_DISABLED` restaura la estructura de la plantilla, pero no desconecta los catálogos. Blog y empresa mantienen páginas propias; el perfil de empresa no sustituye automáticamente textos legales, correo o marca del encabezado/pie, que mantienen `src/content/site.ts` y las variables públicas.
+
+### Importar el contenido original al catálogo
+
+La migración usa exclusivamente las tarjetas de `servicios` y `proyectos` de `src/content/home.ts`. Conserva títulos, descripciones, imágenes, enlaces, empresas, logos y etiquetas. Crea los 6 servicios como publicados, Kaband y BienTasty como publicados y los otros 2 proyectos demo como borradores. No importa las tarjetas de experiencia, no inventa contenido de blog o empresa, y no cambia usuarios, permisos ni documentos del constructor.
+
+Primero revisa la simulación (lee Firestore, pero no escribe):
+
+```bash
+npm run import:site-content
+```
+
+Para aplicar, confirma explícitamente el ID del proyecto que muestra la simulación:
+
+```bash
+npm run import:site-content -- --apply --project TU_PROJECT_ID
+```
+
+La escritura es una transacción create-only: un registro existente se conserva íntegro, incluso si está despublicado o tiene datos distintos; repetir la migración no lo sobrescribe. Se validan documentos, IDs, orígenes de imágenes y descripciones alternativas antes de escribir. No se hacen peticiones a Cloudinary ni se duplican archivos. La simulación y la aplicación requieren una cuenta de servicio con permisos Firestore en el proyecto correcto. Si devuelve `PERMISSION_DENIED`, comprueba la base de datos/API de Firestore y el rol IAM de esa cuenta (por ejemplo, Cloud Datastore User para las operaciones de datos); el custom claim `admin: true` del usuario del navegador no otorga permisos IAM al servidor. No abras las reglas de acceso de clientes para solucionarlo.
 
 Los catálogos y artículos usan texto plano, escapado por React; no interpretan HTML ni incluyen Editor.js en esta adaptación. Imágenes JPG/PNG y URL alternativas están soportadas. No se trasladan las funciones de calendario, terapeuta ni galerías de Flor de luna. Las APIs de archivos admiten firma de video, pero los formularios actuales solo suben imágenes.
 
@@ -80,6 +98,7 @@ npm run test:page-builder
 npm run test:security
 npm run test:admin-ui
 npm run test:home-catalogs
+npm run test:catalog-import
 npm run build
 npm audit --omit=dev
 npm audit

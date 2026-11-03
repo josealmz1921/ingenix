@@ -32,9 +32,15 @@ export function composeHomeCatalogs(
 
       return {
         ...card,
-        company: '',
-        category: '',
+        company: String(record.document.company || ''),
+        category: String(record.document.categoryLabel || ''),
         image: card.image ?? { src: '', alt: '' },
+        ...(record.document.logo ? {
+          logo: {
+            src: String(record.document.logo),
+            alt: String(record.document.logoAlt || record.document.company || card.title),
+          },
+        } : {}),
       };
     });
 
