@@ -1,13 +1,20 @@
-# Ingenix y módulo de bloques reutilizables
+# Ingenix · Sitio y administración
 
-La portada usa el módulo autocontenido [`src/page-builder/`](src/page-builder/README.md). Esa carpeta contiene los bloques, variantes, estilos sin Tailwind, tema de Flor de luna, contrato JSON y validación necesarios para integrarlo con el administrador de `holistica`.
+La portada usa el módulo autocontenido [`src/page-builder/`](src/page-builder/README.md). El administrador se adaptó desde Holística, manteniendo el contenido y la identidad de Ingenix y separando interfaz, autorización de servidor y persistencia.
 
 - Página actual: `app/(site)/page.tsx`.
 - Contenido de Ingenix: `src/content/home.ts` y `src/content/site.ts`.
 - Módulo trasladable: `src/page-builder/` completo, sin copiar datos ni imágenes de clientes.
 - Comprobación del módulo: `npm run test:page-builder`.
 
-La interfaz del editor y su conexión a Firebase/Cloudinary se implementarán en el repositorio destino. Las rutas antiguas de componentes extraídos son reexportaciones de compatibilidad. Los ejemplos genéricos de componentes que aparecen más abajo no describen APIs adicionales ya implementadas.
+El administrador incluye acceso por Firebase, claim `admin: true`, constructor visual, servicios, proyectos, categorías, blog y perfil de empresa. Solo los datos publicados llegan al sitio; sin configuración o publicación válida, la portada conserva su contenido original. No se incluyen credenciales ni datos de Flor de luna.
+
+- Acceso: `/login`. Administración: `/dashboard`.
+- Configuración, arquitectura y límites: [Administración](docs/admin.md).
+- Copia **los nombres de variables** de `.env.example` y configura tus propios proveedores. No copies secretos de otro proyecto.
+- Requiere Node.js 22 o posterior. Pruebas: `npm run test:page-builder`, `npm run test:security`; reglas únicamente en emulador (`docs/admin.md`).
+
+Las rutas antiguas de componentes extraídos son reexportaciones de compatibilidad. Los ejemplos genéricos de componentes que aparecen más abajo no describen APIs adicionales ya implementadas.
 
 Proyecto creado con [Next.js](https://nextjs.org) y `create-next-app`.
 

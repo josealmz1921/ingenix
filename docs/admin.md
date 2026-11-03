@@ -1,0 +1,100 @@
+# Administración de Ingenix
+
+## Estructura y responsabilidades
+
+| Ubicación | Responsabilidad |
+| --- | --- |
+| `app/(admin)/dashboard/` | Rutas administrativas; no contiene acceso directo a datos |
+| `src/components/Admin/` | Login, estado de sesión, navegación, formularios y listas |
+| `useResourceEditor.ts` / `ResourceField.tsx` | Operaciones asíncronas separadas del formulario y de sus campos |
+| `src/components/PageBuilder/` | Editor visual, edición directa, arrastre, confirmaciones y vista previa |
+| `src/page-builder/` | Módulo portable de bloques, contrato, validación y renderizado |
+| `src/content/adminResources.ts` | Campos y metadatos compartidos de los módulos |
+| `src/server/adminApi.ts` | Autorización, respuestas seguras, JSON acotado y límites |
+| `src/server/resources.ts` / `resourceValidation.ts` / `contentStore.ts` | Operaciones, validación y colección compartida de los catálogos |
+| `src/server/pages.ts` / `publishedHome.ts` | Borrador, publicación y lectura pública del inicio |
+| `src/server/publicContent.ts` | Proyección validada exclusivamente de contenido publicado |
+| `src/firebase/` | SDK cliente y cabeceras autenticadas; sin credenciales privadas |
+| `src/cloudinary/`, `app/api/cloudinary/` | Firma y eliminación autenticadas de archivos |
+
+Se reutilizan el constructor y controles de Holística. Los formularios de catálogo se adaptan a un modelo común de Ingenix, sin importar cuentas, base de datos, imágenes ni contenido del otro sitio. No se copia el perfil de terapeuta: aquí existe un perfil de empresa.
+
+### Tema y distribución del administrador
+
+La distribución sigue Holística: menú lateral en escritorio, cabecera y área de trabajo con scroll independiente; en móvil, navegación inferior con desplazamiento horizontal para mantener accesibles todas las secciones. Los enlaces conservan el estado activo dentro de los editores anidados. La salida de sesión permanece accesible junto a la navegación móvil.
+
+`src/components/Admin/theme.module.css` centraliza la paleta oscura de Ingenix (azul profundo, acentos azules y texto claro), estados y fuentes Asap/DM Sans. `admin.module.css` define la distribución y formularios, y `confirmation.module.css` junto con `confirmationTheme.ts` comparte SweetAlert2 entre catálogos y constructor. Los portales incluyen su propia clase de tema, sin depender de que estén dentro del menú o formulario.
+
+El tema administrativo **no define tokens `--pb-*` ni modifica estilos públicos**. El constructor conserva catálogo/lienzo/inspector y su renderizador independiente. Los contrastes de texto de los tokens, incluido el hover de botones primarios, se comprueban automáticamente; esto no sustituye una auditoría completa de accesibilidad. Se mantienen focos visibles, cancelación enfocada en diálogos, etiquetas para botones de solo icono y reducción de movimiento.
+
+## Rutas y comportamiento
+
+- `/login`: correo y contraseña, sin registro público ni asignación de roles.
+- `/dashboard`: resumen y acceso a páginas, servicios, proyectos, categorías, blog y empresa.
+- `/dashboard/pages/home`: edita **toda la portada**; se mantienen colores y tipografías de Ingenix. La plantilla local copia `src/content/home.ts` y nunca escribe en la base por sí sola.
+- `/dashboard/{services|projects|categories|blog|company}`: listas de hasta 50 registros por página; formularios en `/{id}` o `/new`.
+- `/servicios`, `/proyectos`, `/blog`: listados públicos paginados; detalles en `/{id}`. Categorías organizan registros y no crean páginas públicas propias.
+- `/empresa`: perfil único publicado (`profile`). Se enlaza desde el pie cuando existe.
+- `/builder-preview`: documento local de la sesión, solo para administradores; noindex y sin scripts de medición.
+
+**Guardar borrador no publica la portada.** Publicar valida otra vez el borrador guardado y crea `pagePublished/home`. Las revisiones impiden sobrescribir cambios de otra sesión (409). Si falla la lectura pública o su validación, se conserva la portada original; `PAGE_BUILDER_HOME_DISABLED=true` fuerza ese fallback tras reiniciar/re desplegar. La navegación del encabezado y pie sigue las secciones visibles publicadas.
+
+Los catálogos son independientes: su opción **Publicado** determina visibilidad y guardar una entrada marcada pide confirmación. Desmarcarla y guardar la retira del sitio. No tienen un segundo borrador separado de una versión pública: para preparar cambios privados hay que despublicar la entrada. Solo la portada usa instantáneas separadas. Los identificadores públicos no cambian después de crear el registro. Categorías deben existir y estar publicadas para asociarlas a un contenido publicado; eliminar una categoría no borra sus registros ni sus referencias.
+
+**Las tarjetas de servicios y proyectos de la portada se alimentan del catálogo publicado.** `src/server/homeContent.ts` combina la portada publicada (o la plantilla) con los lectores públicos validados. `src/content/homeCatalogs.ts` reemplaza los elementos de la sección `servicios` de tipo `cards` y de `proyectos` de tipo `projects`, sin duplicarlos ni escribir en Firestore. Conserva encabezados, variantes, columnas, orden y visibilidad del constructor. No crea secciones que hayas eliminado ni conecta bloques con otros identificadores.
+
+Se muestran hasta 25 registros por catálogo, ordenados por identificador como en sus páginas públicas; las listas `/servicios` y `/proyectos` mantienen su paginación. Cada tarjeta enlaza al detalle público, donde se conserva el enlace externo del registro. Las imágenes son opcionales: sin imagen no se inventa una; tampoco se inventan empresas, logos ni etiquetas de categoría. Guardar un registro publicado actualiza su tarjeta al recargar el home, y despublicarlo o eliminarlo la retira sin volver a mostrar ejemplos estáticos. Si no hay registros publicados o falla la lectura, las tarjetas quedan vacías (sin exponer borradores).
+
+El lienzo y la vista previa privada del constructor siguen mostrando el documento local, no una mezcla con datos del catálogo; un aviso explica esta diferencia. Allí se editan los títulos, el diseño y la visibilidad de las secciones conectadas, no sus tarjetas públicas. La opción `PAGE_BUILDER_HOME_DISABLED` restaura la estructura de la plantilla, pero no desconecta los catálogos. Blog y empresa mantienen páginas propias; el perfil de empresa no sustituye automáticamente textos legales, correo o marca del encabezado/pie, que mantienen `src/content/site.ts` y las variables públicas.
+
+Los catálogos y artículos usan texto plano, escapado por React; no interpretan HTML ni incluyen Editor.js en esta adaptación. Imágenes JPG/PNG y URL alternativas están soportadas. No se trasladan las funciones de calendario, terapeuta ni galerías de Flor de luna. Las APIs de archivos admiten firma de video, pero los formularios actuales solo suben imágenes.
+
+## Configurar proveedores (pasos manuales)
+
+1. Usa preferiblemente un **proyecto Firebase independiente de Flor de luna**. Activa Authentication por correo/contraseña, crea únicamente tus cuentas autorizadas y configura los dominios válidos. No hay registro público en la aplicación; comprueba también las políticas del proveedor.
+2. Completa `.env.local` a partir de `.env.example`. La configuración web es pública. `FIREBASE_ADMIN_CLIENT_EMAIL` y `FIREBASE_ADMIN_PRIVATE_KEY` son privadas, sin `NEXT_PUBLIC_`. Alternativamente, usa Application Default Credentials en un entorno preparado. Navegador y servidor deben pertenecer al mismo proyecto. La cuenta de servicio necesita los permisos mínimos de verificación de Auth y de lectura/escritura Firestore correspondientes.
+3. Asigna el claim **booleano** `admin: true` individualmente. El script conserva otros claims y revoca sesiones anteriores. Ejemplo con un UID ficticio: `node --env-file-if-exists=.env.local scripts/set-admin.mjs --uid UID_DE_EJEMPLO --grant`. Para retirarlo, usa `--revoke`. Vuelve a iniciar sesión. **No ejecutes este script como prueba.**
+4. Revisa y despliega `firestore.rules` explícitamente al proyecto correcto. Esta instalación niega **todo acceso directo desde SDK cliente**, incluso como admin: todos los datos se leen/escriben mediante servidor. No uses estas reglas en una base compartida sin revisar sus otros consumidores.
+5. Configura Cloudinary con un preset **firmado** de imágenes, sin sobrescritura y con formatos/dimensiones/tamaños restringidos en el proveedor. Elige una carpeta exclusiva en `CLOUDINARY_ASSET_FOLDER` y las variables privadas de firma. Los archivos usan IDs aleatorios; no hay permisos para borrar imágenes fuera de esta carpeta ni excepciones para imágenes antiguas de otro sitio. Si necesitas video, configura su propio preset firmado.
+6. Repite las verificaciones de permisos con cuentas de prueba y revisa la composición publicada en un entorno no productivo antes de desplegar.
+
+Crear archivos locales **no activa** reglas, claims, presets, dominios ni permisos remotos. No se han migrado documentos ni publicado contenido como parte de esta integración.
+
+## Seguridad
+
+- El bloqueo de interfaz no es la barrera efectiva. **Todas** las APIs administrativas verifican `verifyIdToken(token, true)`, incluida revocación, y exigen `admin === true` antes de tocar la base.
+- El SDK Admin evita las reglas de Firestore: no añadir endpoints sin esa autorización. Las lecturas públicas usan rutas/colecciones fijas, filtran `published`, validan y solo devuelven los campos públicos del contrato; nunca consultan borradores de páginas.
+- Colecciones: `pageDrafts/home`, `pagePublished/home`, `cms_services`, `cms_projects`, `cms_categories`, `cms_blog`, `cms_company/profile`. No se reutilizan colecciones de Flor de luna.
+- Las revisiones son optimistas. Publicar una portada no acepta documentos arbitrarios del navegador. El JSON de portada se limita a 256 KiB; recursos a cuerpos de 128 KiB y campos con límites explícitos. Los cambios tienen límite local de 20 solicitudes/minuto por UID/acción, **no distribuido** entre procesos.
+- Respuestas administrativas `no-store`, sin trazas, tokens ni secretos. Cabeceras `nosniff`, rechazo de iframes y CSP parcial (`frame-ancestors`, `base-uri`, `object-src`); **no es una CSP completa de scripts**.
+- `noindex`/robots no son autorización. No exponer `next dev` como servidor público.
+- Quitar contenido o una referencia no borra archivos de Cloudinary. No hay biblioteca de medios ni limpieza automática; revisa referencias antes de usar la API de eliminación.
+- La protección de salida usa el diálogo nativo del navegador al cerrar/recargar; las confirmaciones editoriales usan SweetAlert2. La navegación interna no ofrece historial ni recuperación automática de cambios sin guardar.
+
+## Verificación
+
+```sh
+npx tsc --noEmit
+npm run lint
+npm run test:page-builder
+npm run test:security
+npm run test:admin-ui
+npm run test:home-catalogs
+npm run build
+npm audit --omit=dev
+npm audit
+```
+
+Reglas, exclusivamente en un proyecto demo y emulador (requiere Java y Firebase CLI):
+
+```sh
+firebase emulators:exec --only firestore --project demo-ingenix-security "npm run test:rules"
+```
+
+El archivo de prueba exige `FIRESTORE_EMULATOR_HOST` y usa siempre `demo-ingenix-security`. Las suites de APIs y lectores sustituyen los proveedores por dobles en memoria. No hacer pruebas contra Firebase/Cloudinary de producción.
+
+Estado local al integrar (3 de noviembre de 2026): build y lint pasan (13 advertencias preexistentes en stories), 18 pruebas de constructor/publicación y 19 de seguridad/catálogos, más 3 de reglas en emulador. En servidor de producción local sin credenciales, se verificaron la portada original, el bloqueo del editor y respuestas administrativas 401/no-store. En un montaje aislado con sesión y persistencia simuladas se comprobaron la precarga/cancelación sin escrituras, edición directa y guardado de un borrador, creación de servicio con texto literal y cancelación de publicación con el formulario bloqueado. No se contactaron proveedores reales.
+
+Auditoría sin vulnerabilidades altas/críticas; permanecen 6 moderadas de producción en la cadena transitiva de Google/`rimraf`/`glob`/`minimatch`, y 21 moderadas en la auditoría completa contando herramientas. Se aplicaron actualizaciones compatibles y el override corregido de gRPC; no se forzaron cambios mayores ni se rebajó ESLint. Estas cifras no garantizan auditorías futuras. Pendientes: proveedores reales, cuentas autorizadas y verificación autenticada de extremo a extremo, publicación y despliegue.
+
+Revisión visual del tema: build, TypeScript, lint y 40 pruebas sin emulador (18 de constructor, 19 de seguridad y 3 de tema/navegación). Montaje aislado con sesión y datos simulados en escritorio (1440 px) y ventana móvil de 390 px: navegación activa, acceso por foco al último enlace de la barra móvil, ausencia de desbordamiento horizontal, ajustes SEO y SweetAlert2 oscuros dentro de la pantalla, y cancelación sin escrituras. No se cambiaron permisos, reglas, documentos remotos ni presentación del sitio público durante esta revisión.
