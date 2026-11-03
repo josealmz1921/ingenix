@@ -1,0 +1,24 @@
+/* Ingenix admin tokens. Never set --pb-* here: the canvas owns its public theme. */
+.theme {
+  color-scheme: dark;
+  --admin-background: #0a0f1e;
+  --admin-surface: #101b2d;
+  --admin-raised: #16243a;
+  --admin-hover: #1c2f4b;
+  --admin-input: #0c1627;
+  --admin-border: #2b3e5a;
+  --admin-text: #f1f5fb;
+  --admin-muted: #a9bad1;
+  --admin-primary: #1164ff;
+  --admin-primary-hover: #0754db;
+  --admin-accent: #9bc5ff;
+  --admin-selected: #183765;
+  --admin-danger: #ffb1b9;
+  --admin-danger-surface: #351c2c;
+  --admin-success: #a3e5ce;
+  --admin-success-surface: #12352f;
+  --admin-warning: #f2d292;
+  --admin-warning-surface: #302a1e;
+  --font-body: var(--font-dm-sans), sans-serif;
+  --font-heading: var(--font-asap-sans), sans-serif;
+}

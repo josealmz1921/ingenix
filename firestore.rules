@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // All CMS operations go through verified server APIs, including public reads.
+    // Admin SDK bypasses rules, so requireAdmin is mandatory on every admin handler.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
