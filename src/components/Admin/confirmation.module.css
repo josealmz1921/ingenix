@@ -1,0 +1,28 @@
+.popup {
+  composes: theme from './theme.module.css';
+  padding: 1.5rem 1rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  background: var(--admin-surface);
+  color: var(--admin-text);
+  box-shadow: 0 24px 100px #0007;
+  font-family: var(--font-body);
+}
+.popup .title { color: var(--admin-text); font: 600 1.6rem/1.3 var(--font-heading); letter-spacing: -.025em; }
+.popup .text { color: var(--admin-muted); font-size: .875rem; line-height: 1.8; }
+.popup .actions { gap: .75rem; padding: 0 .5rem; }
+.confirm, .cancel, .danger {
+  min-height: 44px;
+  padding: .7rem 1rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 7px;
+  font: 600 .8rem var(--font-body);
+  cursor: pointer;
+}
+.confirm { background: var(--admin-primary); color: white; border-color: var(--admin-primary); }
+.confirm:hover { background: var(--admin-primary-hover); }
+.cancel { background: var(--admin-raised); color: var(--admin-text); }
+.cancel:hover { background: var(--admin-hover); }
+.danger { background: var(--admin-danger-surface); color: var(--admin-danger); border-color: #743849; }
+.danger:hover { background: #50243b; }
+.confirm:focus-visible, .cancel:focus-visible, .danger:focus-visible { outline: 2px solid var(--admin-accent); outline-offset: 4px; }

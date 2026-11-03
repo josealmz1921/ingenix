@@ -63,7 +63,7 @@ export const homeSections: PageSection[] = [
     content: {
       eyebrow: 'Proyectos realizados',
       title: 'Nuestro trabajo, llevado a la práctica.',
-      description: 'Vista previa con proyectos ficticios. Las empresas, imágenes y enlaces son de demostración y se reemplazarán por proyectos reales.',
+      description: 'Conoce una selección de nuestros proyectos y las soluciones que desarrollamos para cada negocio.',
       // Temporary demos. example.com is a reserved example domain, not a client site.
       items: [
         {
