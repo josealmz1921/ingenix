@@ -74,6 +74,7 @@ import {
 } from '@/src/content/homeCatalogs';
 import CatalogSelection from './CatalogSelection';
 import { usePageCatalogs } from './usePageCatalogs';
+import LoadingPage from '@/src/components/LoadingPage/LoadingPage';
 
 async function request(method = 'GET', body?: unknown) {
   const response = await fetch('/api/admin/pages/home', {
@@ -528,9 +529,7 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
 
   if (loading) {
     return (
-      <div className={styles.loading} role="status">
-        Cargando tu espacio de páginas…
-      </div>
+      <LoadingPage message="Cargando tu espacio de páginas…" />
     );
   }
 

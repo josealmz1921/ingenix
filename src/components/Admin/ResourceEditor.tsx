@@ -5,6 +5,7 @@ import type { ResourceName } from '@/src/content/adminResources';
 import { useResourceEditor } from './useResourceEditor';
 import ResourceField from './ResourceField';
 import styles from './admin.module.css';
+import LoadingPage from '@/src/components/LoadingPage/LoadingPage';
 
 export default function ResourceEditor({ resource, id }: { resource: ResourceName; id: string }) {
   const editor = useResourceEditor(resource, id);
@@ -21,7 +22,7 @@ export default function ResourceEditor({ resource, id }: { resource: ResourceNam
         {dirty ? 'Cambios sin guardar' : `Revisión ${revision}`} · El contenido se guarda como texto
         plano, sin interpretar HTML.
       </p>
-      {loading && <p role="status">Cargando…</p>}
+      {loading && <LoadingPage message="Cargando contenido…" />}
       {error && <p role="alert">{error}</p>}
       {message && <p role="status">{message}</p>}
 

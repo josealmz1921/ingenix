@@ -19,7 +19,7 @@
     "test:page-builder": "node --test tests/page-builder.test.mjs tests/pages-api.test.cjs tests/builder-confirmations.test.cjs tests/published-home.test.cjs",
     "test:security": "node --test tests/security.test.cjs tests/resources.test.cjs",
     "test:rules": "node --test tests/firestore.rules.test.cjs",
-    "test:admin-ui": "node --test tests/admin-ui.test.cjs",
+    "test:admin-ui": "node --test tests/admin-ui.test.cjs tests/loading-page.test.cjs",
     "test:home-catalogs": "node --test tests/home-catalogs.test.cjs",
     "test:catalog-import": "node --test tests/catalog-import.test.cjs",
     "import:site-content": "node --conditions=react-server --env-file-if-exists=.env.local --import tsx scripts/import-site-content.ts"
@@ -33,6 +33,7 @@
     "firebase": "^12.19.0",
     "firebase-admin": "^14.5.0",
     "informed": "^4.66.3",
+    "lottie-web": "^5.13.0",
     "next": "16.4.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",

@@ -1,0 +1,48 @@
+.loading {
+  @apply grid min-h-[24rem] w-full place-items-center px-4 py-8 text-center;
+  background: radial-gradient(ellipse at center, #102845 0%, #08111f 70%);
+  color: #f2f6fc;
+}
+
+.fullScreen {
+  @apply min-h-svh;
+}
+
+.content {
+  @apply grid justify-items-center;
+  gap: .8rem;
+}
+
+.artwork {
+  @apply relative;
+  width: min(15rem, 65vw);
+  @apply aspect-square;
+}
+
+.animation {
+  @apply absolute inset-0;
+  /* Keep the original animation intact; tint its circuits to Ingenix blue. */
+  filter: grayscale(1) sepia(1) saturate(3) hue-rotate(165deg);
+}
+
+.animation svg {
+  @apply block h-full w-full;
+}
+
+.fallback {
+  @apply absolute inset-1/4 h-1/2 w-1/2;
+  color: #7dc5ff;
+}
+
+.brand {
+  font-family: var(--font-asap), sans-serif;
+  font-size: .9rem;
+  @apply font-bold;
+  letter-spacing: .3em;
+}
+
+.message {
+  @apply m-0;
+  color: #b8cbe0;
+  font-size: .9rem;
+}
