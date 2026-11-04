@@ -1,8 +1,7 @@
 .popup {
   composes: theme from './theme.module.css';
-  padding: 1.5rem 1rem;
+  @apply rounded-2xl px-4 py-6;
   border: 1px solid var(--admin-border);
-  border-radius: 16px;
   background: var(--admin-surface);
   color: var(--admin-text);
   box-shadow: 0 24px 100px #0007;
@@ -10,16 +9,14 @@
 }
 .popup .title { color: var(--admin-text); font: 600 1.6rem/1.3 var(--font-heading); letter-spacing: -.025em; }
 .popup .text { color: var(--admin-muted); font-size: .875rem; line-height: 1.8; }
-.popup .actions { gap: .75rem; padding: 0 .5rem; }
+.popup .actions { @apply gap-3 px-2 py-0; }
 .confirm, .cancel, .danger {
-  min-height: 44px;
+  @apply min-h-[44px] cursor-pointer rounded-[7px];
   padding: .7rem 1rem;
   border: 1px solid var(--admin-border);
-  border-radius: 7px;
   font: 600 .8rem var(--font-body);
-  cursor: pointer;
 }
-.confirm { background: var(--admin-primary); color: white; border-color: var(--admin-primary); }
+.confirm { @apply text-white; background: var(--admin-primary); border-color: var(--admin-primary); }
 .confirm:hover { background: var(--admin-primary-hover); }
 .cancel { background: var(--admin-raised); color: var(--admin-text); }
 .cancel:hover { background: var(--admin-hover); }

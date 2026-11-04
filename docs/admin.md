@@ -1,5 +1,17 @@
 # Administración de Ingenix
 
+## Pantallas de carga
+
+`src/components/LoadingPage/LoadingPage.tsx` muestra el CPU de MD Abdur con el tema azul de Ingenix. Se usa durante la comprobación de acceso, la carga inicial del PageBuilder y catálogos, y las transiciones de rutas del sitio y dashboard. No agrega demoras artificiales ni modifica la autenticación.
+
+El reproductor `lottie-web` se importa solo en el navegador; el JSON vectorial de 34 KB vive en `public/animations/cpu-loading.json`, sin imágenes ni recursos externos. Su licencia y procedencia se conservan en `public/animations/LICENSE.txt`. Mientras carga o si falla queda un CPU estático con texto accesible. Con `prefers-reduced-motion` se muestra un fotograma fijo, y se pausa al ocultar la pestaña. Para reutilizarlo: `<LoadingPage message="Cargando contenido…" />`; `fullScreen` ocupa la altura de la pantalla.
+
+## Estilos
+
+El sitio, administrador y pantalla de carga mantienen clases locales de CSS Modules, con utilidades de Tailwind 3 mediante `@apply`. Se conserva CSS nativo para tokens, fuentes con `font` abreviado, animaciones, transiciones específicas y cálculos de tamaños o áreas seguras. No se sustituyen tamaños tipográficos por `text-sm`/`text-lg` cuando ello cambiaría también el interlineado. `Admin/theme.module.css` sigue siendo la fuente de variables del tema, compartida sin cambios con el editor.
+
+Los estilos de `src/components/PageBuilder/` y `src/page-builder/` quedan fuera de esta migración: el editor conserva su personalización y el módulo portable no depende de Tailwind. Los selectores `:global` del carrusel y las composiciones `composes` del administrador conservan su alcance original.
+
 ## Estructura y responsabilidades
 
 | Ubicación | Responsabilidad |

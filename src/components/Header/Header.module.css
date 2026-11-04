@@ -1,12 +1,6 @@
 .Header {
     --header-height: 72px;
-    position: sticky;
-    top: 0;
-    z-index: 30;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+    @apply sticky top-0 z-30 flex items-center justify-between gap-4;
     min-height: var(--header-height);
     padding-inline: clamp(1rem, 3vw, 1.5rem);
     border-bottom: 1px solid rgb(255 255 255 / .1);
@@ -15,68 +9,44 @@
 }
 
 .logo {
-    flex-shrink: 0;
-    color: white;
+    @apply shrink-0 font-bold text-white;
     font-size: 1.5rem;
-    font-weight: 700;
 }
 
-.logoDot { color: #77aaff; }
+.logoDot { @apply text-[#77aaff]; }
 
 .nav {
-    position: absolute;
+    @apply absolute right-4 hidden grid-cols-1 overflow-y-auto overscroll-contain rounded-2xl bg-secondary p-2;
     top: calc(100% + .5rem);
-    right: 1rem;
-    display: none;
-    grid-template-columns: minmax(0, 1fr);
     width: min(24rem, calc(100vw - 2rem));
     max-height: calc(100dvh - var(--header-height) - 1.5rem);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding: .5rem;
     border: 1px solid rgb(255 255 255 / .1);
-    border-radius: 16px;
-    background: #161b2b;
     box-shadow: 0 24px 60px rgb(0 0 0 / .4);
 }
 
 .navOpen {
-    display: grid;
+    @apply grid;
     animation: reveal 180ms ease-out;
 }
 
 .link {
-    display: flex;
-    align-items: center;
-    min-width: 0;
-    min-height: 48px;
-    padding: .75rem 1rem;
-    border-radius: 10px;
+    @apply flex min-h-[48px] min-w-0 items-center rounded-[10px] px-4 py-3;
     color: rgb(255 255 255 / .85);
     overflow-wrap: anywhere;
     transition: color 180ms ease, background-color 180ms ease;
     font-family: var(--font-dm-sans);
 }
 
-.link:hover { background: rgb(255 255 255 / .05); color: white; }
+.link:hover { @apply bg-white/5 text-white; }
 
 .mobileContact {
-    margin-top: .5rem;
+    @apply mt-2 text-[#9bc5ff];
     border-top: 1px solid rgb(255 255 255 / .1);
-    color: #9bc5ff;
 }
 
 .menuToggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: 44px;
-    height: 44px;
+    @apply inline-flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[10px] bg-secondary text-white;
     border: 1px solid rgb(255 255 255 / .1);
-    border-radius: 10px;
-    background: #161b2b;
-    color: white;
     transition: background-color 180ms ease, border-color 180ms ease;
 }
 
@@ -89,23 +59,16 @@
 .menuToggle:focus-visible,
 .link:focus-visible {
     outline: 2px solid #9bc5ff;
-    outline-offset: 2px;
+    @apply outline-offset-2;
 }
 
 .button {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    min-height: 44px;
-    padding: .5rem 1rem;
-    border-radius: 6px;
-    white-space: nowrap;
-    @apply bg-tertiary text-white;
+    @apply flex min-h-[44px] items-center gap-2 whitespace-nowrap rounded-md bg-tertiary px-4 py-2 text-white;
 }
 
-.icon { width: 16px; height: 16px; flex-shrink: 0; }
-.barsIcon { width: 24px; height: 24px; }
-.linkContact { display: none; }
+.icon { @apply h-[16px] w-[16px] shrink-0; }
+.barsIcon { @apply h-[24px] w-[24px]; }
+.linkContact { @apply hidden; }
 
 @media (min-width: 1024px) {
     .Header {
@@ -116,37 +79,24 @@
 
     .nav,
     .navOpen {
-        position: static;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        @apply static flex min-w-0 flex-1 items-center justify-center;
         gap: clamp(1rem, 2vw, 2rem);
-        flex: 1;
-        min-width: 0;
-        width: auto;
-        max-height: none;
-        overflow: visible;
-        padding: 0;
+        @apply max-h-none w-auto overflow-visible rounded-none bg-transparent p-0;
         border: 0;
-        border-radius: 0;
-        background: transparent;
         box-shadow: none;
-        animation: none;
+        @apply animate-none;
     }
 
     .link {
-        min-height: 44px;
-        padding: .5rem 0;
-        border-radius: 0;
-        white-space: nowrap;
+        @apply min-h-[44px] whitespace-nowrap rounded-none px-0 py-2;
         overflow-wrap: normal;
         font-size: .875rem;
     }
 
-    .link:hover { background: transparent; color: #9bc5ff; }
-    .nav .mobileContact { display: none; }
-    .menuToggle { display: none; }
-    .linkContact { display: flex; flex-shrink: 0; font-size: .875rem; }
+    .link:hover { @apply bg-transparent text-[#9bc5ff]; }
+    .nav .mobileContact { @apply hidden; }
+    .menuToggle { @apply hidden; }
+    .linkContact { @apply flex shrink-0; font-size: .875rem; }
 }
 
 @keyframes reveal {
@@ -155,6 +105,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .navOpen { animation: none; }
-    .menuToggle, .link { transition: none; }
+    .navOpen { @apply animate-none; }
+    .menuToggle, .link { @apply transition-none; }
 }

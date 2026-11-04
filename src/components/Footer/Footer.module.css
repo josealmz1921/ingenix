@@ -13,8 +13,7 @@
 }
 
 .brandName {
-    display: inline-block;
-    @apply mb-4 text-2xl font-bold;
+    @apply mb-4 inline-block text-2xl font-bold;
 }
 
 .brand p {

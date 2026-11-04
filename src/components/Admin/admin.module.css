@@ -1,142 +1,112 @@
 /* Layout mirrors Holística: desktop sidebar, independent content, mobile bottom nav. */
 .shell {
   composes: theme from './theme.module.css';
-  display: grid;
+  @apply grid h-dvh overflow-hidden;
   grid-template-columns: 232px minmax(0, 1fr);
-  height: 100dvh;
-  overflow: hidden;
   background: var(--admin-background);
   color: var(--admin-text);
   font-family: var(--font-body);
 }
 
-.shell, .shell *, .center, .center * { box-sizing: border-box; }
-.shell svg, .center svg { width: 20px; height: 20px; flex-shrink: 0; }
-.shell a, .center a { text-decoration: none; }
+.shell, .shell *, .center, .center * { @apply box-border; }
+.shell svg, .center svg { @apply h-[20px] w-[20px] shrink-0; }
+.shell a, .center a { @apply no-underline; }
 .shell :focus-visible, .center :focus-visible { outline: 2px solid var(--admin-accent); outline-offset: 4px; }
 
 .skipLink {
-  position: fixed;
-  top: -100px;
-  left: 1rem;
-  z-index: 100;
-  padding: .75rem 1rem;
-  border-radius: 8px;
+  @apply fixed top-[-100px] left-4 z-[100] rounded-lg px-4 py-3 text-white;
   background: var(--admin-primary);
-  color: white;
 }
-.skipLink:focus { top: 1rem; }
+.skipLink:focus { @apply top-4; }
 
 .sidebar {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  padding: 1.75rem 1rem 1rem;
+  @apply flex min-h-0 flex-col px-4 pt-7 pb-4;
   border-right: 1px solid var(--admin-border);
   background: var(--admin-surface);
 }
-.brand { display: flex; align-items: center; gap: .7rem; padding: 0 .5rem 2rem; }
+.brand { @apply flex items-center px-2 pt-0 pb-8; gap: .7rem; }
 .brandMark, .cardIcon {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
+  @apply grid h-[40px] w-[40px] place-items-center rounded-xl;
   border: 1px solid #355b91;
-  border-radius: 12px;
   background: var(--admin-selected);
   color: var(--admin-accent);
 }
 .brand strong { font: 700 1.4rem var(--font-heading); letter-spacing: -.05em; }
 .brand strong > span { color: var(--admin-accent); }
-.brand small { display: block; margin-top: .15rem; color: var(--admin-muted); font-size: .65rem; letter-spacing: .08em; }
-.navHeading, .eyebrow { color: var(--admin-muted); text-transform: uppercase; letter-spacing: .12em; font-size: .63rem; font-weight: 600; }
-.navHeading { padding: .5rem .75rem 1rem; }
-.navigation { display: flex; flex: 1; flex-direction: column; gap: .35rem; overflow-y: auto; }
+.brand small { @apply block; margin-top: .15rem; color: var(--admin-muted); font-size: .65rem; letter-spacing: .08em; }
+.navHeading, .eyebrow { @apply font-semibold uppercase; color: var(--admin-muted); letter-spacing: .12em; font-size: .63rem; }
+.navHeading { @apply px-3 pt-2 pb-4; }
+.navigation { @apply flex flex-1 flex-col overflow-y-auto; gap: .35rem; }
 .navigation a {
-  display: flex;
-  align-items: center;
+  @apply flex min-h-[44px] items-center rounded-lg p-3 font-medium;
   gap: .8rem;
-  min-height: 44px;
-  padding: .75rem;
   border: 1px solid transparent;
-  border-radius: 8px;
   color: var(--admin-muted);
   font-size: .82rem;
-  font-weight: 500;
   transition: background .15s, color .15s, border-color .15s;
 }
 .navigation a:hover { background: var(--admin-raised); color: var(--admin-text); }
 .navigation a[aria-current] { background: var(--admin-selected); border-color: #315a93; color: #d6e7ff; }
 .navigation a[aria-current] svg { color: var(--admin-accent); }
-.sidebarFooter { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--admin-border); }
-.sidebarFooter p { display: flex; align-items: center; gap: .45rem; padding: .5rem .75rem 1rem; color: var(--admin-muted); font-size: .65rem; }
-.statusDot { width: 6px; height: 6px; border-radius: 50%; background: var(--admin-success); }
-.sidebarFooter button { display: flex; align-items: center; gap: .8rem; width: 100%; padding: .75rem; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--admin-muted); font: 500 .8rem var(--font-body); cursor: pointer; }
+.sidebarFooter { @apply mt-4 pt-4; border-top: 1px solid var(--admin-border); }
+.sidebarFooter p { @apply flex items-center px-3 pt-2 pb-4; gap: .45rem; color: var(--admin-muted); font-size: .65rem; }
+.statusDot { @apply h-[6px] w-[6px]; border-radius: 50%; background: var(--admin-success); }
+.sidebarFooter button { @apply flex w-full cursor-pointer items-center rounded-lg bg-transparent p-3; gap: .8rem; border: 1px solid transparent; color: var(--admin-muted); font: 500 .8rem var(--font-body); }
 .sidebarFooter button:hover { background: var(--admin-danger-surface); color: var(--admin-danger); }
 
-.mainArea { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.mainArea { @apply flex min-h-0 min-w-0 flex-col; }
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  min-height: 72px;
-  padding: 1rem 1.75rem;
+  @apply flex min-h-[72px] items-center justify-between gap-4 px-7 py-4;
   border-bottom: 1px solid var(--admin-border);
   background: var(--admin-background);
 }
-.breadcrumb, .headerActions, .actions { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem; }
+.breadcrumb, .headerActions, .actions { @apply flex flex-wrap items-center gap-3; }
 .breadcrumb { font-size: .75rem; }
 .breadcrumb > span { color: var(--admin-muted); }
-.breadcrumb strong { font-weight: 500; }
-.headerActions { gap: 1rem; font-size: .72rem; }
-.headerActions > a { display: inline-flex; align-items: center; gap: .4rem; padding: .5rem .7rem; border: 1px solid var(--admin-border); border-radius: 7px; }
+.breadcrumb strong { @apply font-medium; }
+.headerActions { @apply gap-4; font-size: .72rem; }
+.headerActions > a { @apply inline-flex items-center rounded-[7px] py-2; gap: .4rem; padding-inline: .7rem; border: 1px solid var(--admin-border); }
 .headerActions > a:hover { background: var(--admin-raised); }
-.headerActions svg, .accessBadge svg { width: 15px; height: 15px; }
-.accessBadge { display: flex; align-items: center; gap: .4rem; color: var(--admin-muted); }
-.pageOutlet { flex: 1; min-width: 0; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.headerActions svg, .accessBadge svg { @apply h-[15px] w-[15px]; }
+.accessBadge { @apply flex items-center; gap: .4rem; color: var(--admin-muted); }
+.pageOutlet { @apply min-h-0 min-w-0 flex-1 overflow-auto overscroll-contain; }
 .pageOutlet:focus { outline: none; }
 
 /* Overview and catalogues. No selectors below change the public renderer. */
-.content { width: 100%; max-width: 1200px; margin: auto; padding: clamp(1.25rem, 3vw, 2.75rem); }
+.content { @apply m-auto w-full max-w-[1200px]; padding: clamp(1.25rem, 3vw, 2.75rem); }
 .content h1, .center h1 { font: 600 clamp(1.6rem, 3vw, 2.15rem)/1.2 var(--font-heading); letter-spacing: -.035em; margin: .5rem 0 .75rem; }
 .content > p { margin: .75rem 0 1.5rem; max-width: 760px; color: var(--admin-muted); font-size: .85rem; line-height: 1.8; }
 .content > a:not(.button) { color: var(--admin-accent); font-size: .8rem; }
-.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: 2rem 0; }
+.cards { @apply my-8 mx-0 grid grid-cols-3 gap-4; }
 .card {
-  position: relative;
-  display: grid;
+  @apply relative grid rounded-xl p-6;
   align-content: start;
   gap: .9rem;
-  padding: 1.5rem;
   border: 1px solid var(--admin-border);
-  border-radius: 12px;
   background: var(--admin-surface);
   transition: border-color .15s, background .15s, transform .15s;
 }
 .card:hover { transform: translateY(-2px); background: var(--admin-raised); border-color: #527bad; }
 .card h2 { font: 600 1.1rem var(--font-heading); }
 .card p { color: var(--admin-muted); font-size: .78rem; line-height: 1.8; }
-.cardArrow { position: absolute; top: 1.7rem; right: 1.3rem; color: var(--admin-muted); }
+.cardArrow { @apply absolute; top: 1.7rem; right: 1.3rem; color: var(--admin-muted); }
 .card:hover .cardArrow { color: var(--admin-accent); }
-.list { display: grid; gap: .75rem; margin: 1.5rem 0; }
-.row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 1.5rem; border: 1px solid var(--admin-border); border-radius: 10px; background: var(--admin-surface); }
+.list { @apply my-6 mx-0 grid gap-3; }
+.row { @apply flex items-center justify-between gap-4 rounded-[10px] px-6 py-5; border: 1px solid var(--admin-border); background: var(--admin-surface); }
 .row strong { font-size: .9rem; overflow-wrap: anywhere; }
 .row p { margin-top: .4rem; color: var(--admin-muted); font-size: .72rem; }
-.row > a { color: var(--admin-accent); font-size: .8rem; white-space: nowrap; }
-.content .notice { max-width: none; padding: 1rem 1.25rem; border: 1px solid #31517d; border-radius: 10px; background: #112340; color: #c3d7f2; font-size: .78rem; }
+.row > a { @apply whitespace-nowrap; color: var(--admin-accent); font-size: .8rem; }
+.content .notice { @apply max-w-none rounded-[10px] px-5 py-4; border: 1px solid #31517d; background: #112340; color: #c3d7f2; font-size: .78rem; }
 
 /* Form surfaces, controls and feedback share the same tokens as the builder. */
-.form { display: grid; gap: 1.25rem; width: 100%; max-width: 800px; margin-top: 1.5rem; }
-.form > fieldset { margin: 0; padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--admin-border); border-radius: 12px; background: var(--admin-surface); }
-.form fieldset.form { margin-top: 0; }
-.form label { display: grid; gap: .6rem; color: var(--admin-text); font-size: .8rem; font-weight: 500; }
+.form { @apply mt-6 grid w-full max-w-[800px] gap-5; }
+.form > fieldset { @apply m-0 rounded-xl; padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--admin-border); background: var(--admin-surface); }
+.form fieldset.form { @apply mt-0; }
+.form label { @apply grid font-medium; gap: .6rem; color: var(--admin-text); font-size: .8rem; }
 .form input, .form textarea, .form select {
-  width: 100%;
-  min-height: 44px;
+  @apply min-h-[44px] w-full rounded-[7px];
   padding: .75rem .9rem;
   border: 1px solid var(--admin-border);
-  border-radius: 7px;
   background: var(--admin-input);
   color: var(--admin-text);
   font: 400 .85rem/1.6 var(--font-body);
@@ -144,93 +114,80 @@
 }
 .form input::placeholder, .form textarea::placeholder { color: #8b9cb7; }
 .form input:focus, .form textarea:focus, .form select:focus { border-color: var(--admin-accent); outline: none; box-shadow: 0 0 0 3px #1164ff24; }
-.form textarea { min-height: 150px; resize: vertical; }
-.form input[type="checkbox"] { width: 20px; min-height: 20px; height: 20px; accent-color: var(--admin-primary); cursor: pointer; }
-.form input[type="file"] { padding: .5rem; font-size: .75rem; }
-.form input::file-selector-button { border: 1px solid var(--admin-border); border-radius: 5px; margin-right: .75rem; padding: .4rem .6rem; background: var(--admin-raised); color: var(--admin-text); cursor: pointer; }
+.form textarea { @apply min-h-[150px] resize-y; }
+.form input[type="checkbox"] { @apply h-[20px] min-h-[20px] w-[20px] cursor-pointer; accent-color: var(--admin-primary); }
+.form input[type="file"] { @apply p-2; font-size: .75rem; }
+.form input::file-selector-button { @apply mr-3 cursor-pointer rounded-[5px]; border: 1px solid var(--admin-border); padding: .4rem .6rem; background: var(--admin-raised); color: var(--admin-text); }
 .form > fieldset > p { color: var(--admin-muted); font-size: .75rem; line-height: 1.8; }
 .form button, .button, .content > button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  min-height: 42px;
+  @apply inline-flex min-h-[42px] cursor-pointer items-center justify-center gap-2 rounded-[7px] text-white;
   padding: .7rem 1rem;
   border: 1px solid var(--admin-primary);
-  border-radius: 7px;
   background: var(--admin-primary);
-  color: white;
   font: 600 .8rem var(--font-body);
-  cursor: pointer;
   transition: background .15s, border-color .15s;
 }
 .form button:hover:not(:disabled), .button:hover, .content > button:hover:not(:disabled) { background: var(--admin-primary-hover); }
-.form button.danger { margin-left: auto; background: transparent; color: var(--admin-danger); border-color: #743849; }
+.form button.danger { @apply ml-auto bg-transparent; color: var(--admin-danger); border-color: #743849; }
 .form button.danger:hover:not(:disabled) { background: var(--admin-danger-surface); }
-.shell button:disabled, .center button:disabled, .form fieldset:disabled { opacity: .55; cursor: not-allowed; }
-.form .actions { padding-top: 1.25rem; border-top: 1px solid var(--admin-border); }
+.shell button:disabled, .center button:disabled, .form fieldset:disabled { @apply cursor-not-allowed opacity-[.55]; }
+.form .actions { @apply pt-5; border-top: 1px solid var(--admin-border); }
 .content > [role="alert"], .form [role="alert"], .errorMessage { padding: .85rem 1rem; border: 1px solid #743849; border-radius: 8px; background: var(--admin-danger-surface); color: var(--admin-danger); font-size: .8rem; line-height: 1.7; }
 .content > [role="status"] { padding: .85rem 1rem; border-radius: 8px; background: var(--admin-raised); color: var(--admin-accent); font-size: .8rem; }
-.errorMessage { margin: .75rem 1rem; }
+.errorMessage { @apply mx-4 my-3; }
 
 /* Access states and login. */
 .center {
   composes: theme from './theme.module.css';
-  display: grid;
-  min-height: 100dvh;
-  align-content: center;
-  justify-items: center;
-  gap: 1rem;
-  padding: 2rem 1.25rem;
+  @apply grid min-h-dvh content-center justify-items-center gap-4 px-5 py-8 text-center;
   background: radial-gradient(ellipse at 50% 0, #18376566, transparent 65%), var(--admin-background);
   color: var(--admin-text);
   font-family: var(--font-body);
-  text-align: center;
 }
 .center > p { max-width: 480px; color: var(--admin-muted); line-height: 1.8; font-size: .9rem; }
 .center > a { color: var(--admin-accent); }
-.center .form { max-width: 440px; padding: clamp(1.5rem, 5vw, 2.5rem); margin: 0; border: 1px solid var(--admin-border); border-radius: 16px; background: var(--admin-surface); box-shadow: 0 24px 80px #0004; text-align: left; }
-.center .form h1 { margin: 0; font-size: 1.65rem; }
+.center .form { @apply m-0 max-w-[440px] rounded-2xl text-left; padding: clamp(1.5rem, 5vw, 2.5rem); border: 1px solid var(--admin-border); background: var(--admin-surface); box-shadow: 0 24px 80px #0004; }
+.center .form h1 { @apply m-0; font-size: 1.65rem; }
 .center .form > p { color: var(--admin-muted); font-size: .8rem; line-height: 1.8; }
-.center .form > a { justify-self: center; color: var(--admin-accent); font-size: .8rem; }
-.loginMark { display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid #355b91; border-radius: 12px; background: var(--admin-selected); color: var(--admin-accent); }
-.loginMark svg { width: 26px; height: 26px; }
+.center .form > a { @apply justify-self-center; color: var(--admin-accent); font-size: .8rem; }
+.loginMark { @apply grid h-[48px] w-[48px] place-items-center rounded-xl; border: 1px solid #355b91; background: var(--admin-selected); color: var(--admin-accent); }
+.loginMark svg { @apply h-[26px] w-[26px]; }
 
 /* Public articles remain independent of the admin colour scheme. */
-.article { max-width: 900px; margin: auto; padding: 3rem 1.25rem; }
-.article h1 { font: 700 clamp(2rem, 5vw, 3.5rem) var(--font-asap-sans), sans-serif; margin: 1rem 0; }
-.article h2 { font-size: 1.5rem; font-weight: 700; margin: 1rem 0; }
-.article p { white-space: pre-wrap; line-height: 1.8; margin: 1rem 0; }
-.article a { color: #9bc5ff; text-decoration: underline; }
-.publicImage { width: 100%; max-height: 480px; object-fit: cover; border-radius: 12px; }
+.article { @apply m-auto max-w-[900px] px-5 py-12; }
+.article h1 { @apply my-4 mx-0; font: 700 clamp(2rem, 5vw, 3.5rem) var(--font-asap-sans), sans-serif; }
+.article h2 { @apply my-4 mx-0 font-bold; font-size: 1.5rem; }
+.article p { @apply my-4 mx-0 whitespace-pre-wrap; line-height: 1.8; }
+.article a { @apply text-[#9bc5ff] underline; }
+.publicImage { @apply max-h-[480px] w-full rounded-xl object-cover; }
 
 @media (max-width: 1150px) {
   .shell { grid-template-columns: 208px minmax(0, 1fr); }
-  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cards { @apply grid-cols-2; }
 }
 
 @media (max-width: 767px) {
-  .shell { grid-template-columns: minmax(0, 1fr); padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
-  .sidebar { position: fixed; inset: auto 0 0; z-index: 30; flex-direction: row; gap: .25rem; height: calc(80px + env(safe-area-inset-bottom)); padding: .5rem .5rem calc(.5rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--admin-border); border-right: 0; box-shadow: 0 -8px 32px #0003; }
-  .brand, .navHeading, .sidebarFooter p { display: none; }
-  .navigation { flex-direction: row; overflow-x: auto; gap: .2rem; padding: .1rem; }
-  .navigation a { flex-shrink: 0; flex-direction: column; justify-content: center; gap: .35rem; min-width: 68px; padding: .5rem; font-size: .6rem; }
-  .sidebarFooter { margin: 0; padding: 0 0 0 .35rem; border-top: 0; border-left: 1px solid var(--admin-border); }
-  .sidebarFooter button { flex-direction: column; justify-content: center; height: 100%; min-width: 65px; gap: .35rem; padding: .4rem; font-size: .6rem; }
-  .header { min-height: 64px; padding: .85rem 1rem; }
-  .accessBadge { display: none; }
-  .breadcrumb { gap: .5rem; font-size: .7rem; }
+  .shell { @apply grid-cols-1; padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+  .sidebar { @apply fixed z-30 flex-row gap-1; inset: auto 0 0; height: calc(80px + env(safe-area-inset-bottom)); padding: .5rem .5rem calc(.5rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--admin-border); border-right: 0; box-shadow: 0 -8px 32px #0003; }
+  .brand, .navHeading, .sidebarFooter p { @apply hidden; }
+  .navigation { @apply flex-row overflow-x-auto; gap: .2rem; padding: .1rem; }
+  .navigation a { @apply min-w-[68px] shrink-0 flex-col justify-center p-2; gap: .35rem; font-size: .6rem; }
+  .sidebarFooter { @apply m-0; padding: 0 0 0 .35rem; border-top: 0; border-left: 1px solid var(--admin-border); }
+  .sidebarFooter button { @apply h-full min-w-[65px] flex-col justify-center; gap: .35rem; padding: .4rem; font-size: .6rem; }
+  .header { @apply min-h-[64px] px-4; padding-block: .85rem; }
+  .accessBadge { @apply hidden; }
+  .breadcrumb { @apply gap-2; font-size: .7rem; }
   .headerActions > a { font-size: .68rem; }
 }
 
 @media (max-width: 480px) {
-  .cards { grid-template-columns: minmax(0, 1fr); }
-  .row { align-items: flex-start; flex-direction: column; padding: 1.1rem; }
-  .form button.danger { margin-left: 0; }
-  .form .actions > button { flex: 1; }
+  .cards { @apply grid-cols-1; }
+  .row { @apply flex-col items-start; padding: 1.1rem; }
+  .form button.danger { @apply ml-0; }
+  .form .actions > button { @apply flex-1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .shell *, .center * { transition: none; }
+  .shell *, .center * { @apply transition-none; }
   .card:hover { transform: none; }
 }
