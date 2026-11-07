@@ -3,6 +3,7 @@ import { cache } from 'react';
 import type { ResourceName, ResourceRecord } from '@/src/content/adminResources';
 import { resourceCollection } from './contentStore';
 import { validateResource, validateResourceId } from './resourceValidation';
+import { emptyContact, projectContact } from '@/src/content/contact';
 
 export const publicSections = { servicios: 'services', proyectos: 'projects', blog: 'blog', empresa: 'company' } as const;
 export type PublicSection = keyof typeof publicSections;
@@ -49,6 +50,12 @@ export const getPublicRecord = cache(async (section: PublicSection, id: string) 
   const snapshot = await resourceCollection(resource).doc(id).get();
   return snapshot.exists ? publicRecord(resource, id, snapshot.data()) : null;
 }, null));
+
+export const getPublicContact = cache(async () => boundedRead(async () => {
+  const snapshot = await resourceCollection('contact').doc('profile').get();
+  const record = snapshot.exists ? publicRecord('contact', 'profile', snapshot.data()) : null;
+  return projectContact(record?.document);
+}, emptyContact));
 
 /** Whole published catalogue for curated home blocks, not only the first listing page. */
 export const getPublishedCatalog = cache(async (resource: 'services' | 'projects') => boundedRead(async () => {

@@ -86,11 +86,13 @@ export function useResourceEditor(resource: ResourceName, id: string) {
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     await perform(async () => {
-      if (document.published) {
+      if (document.published || JSON.parse(saved).published === true) {
         const result = await Swal.fire({
           ...confirmationTheme(),
-          title: '¿Guardar y publicar?', text: 'Estos cambios serán visibles en el sitio.', icon: 'warning',
-          confirmButtonText: 'Guardar y publicar',
+          title: document.published ? '¿Guardar y publicar?' : '¿Guardar y ocultar?',
+          text: document.published ? 'Estos cambios serán visibles en el sitio.' : 'Este contenido dejará de mostrarse en el sitio.',
+          icon: 'warning',
+          confirmButtonText: document.published ? 'Guardar y publicar' : 'Guardar y ocultar',
         });
         if (!result.isConfirmed) return;
       }

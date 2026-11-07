@@ -1,6 +1,8 @@
+import { socialNetworks } from './contact';
+
 /** Shared form metadata. Validation and persistence remain server responsibilities. */
-export type ResourceName = 'services' | 'categories' | 'projects' | 'blog' | 'company';
-export type ContentField = { key: string; label: string; kind: 'text' | 'textarea' | 'image' | 'url' | 'email' | 'category'; max: number; required?: boolean };
+export type ResourceName = 'services' | 'categories' | 'projects' | 'blog' | 'company' | 'contact';
+export type ContentField = { key: string; label: string; kind: 'text' | 'textarea' | 'image' | 'url' | 'email' | 'category' | 'phone' | 'checkbox'; max: number; required?: boolean };
 type ResourceDefinition = { label: string; singular: string; publicPath: string; fields: ContentField[]; singleton?: boolean };
 
 const title: ContentField = { key: 'title', label: 'Título', kind: 'text', max: 160, required: true };
@@ -23,6 +25,22 @@ export const resourceDefinitions: Record<ResourceName, ResourceDefinition> = {
   projects: { label: 'Proyectos', singular: 'Proyecto', publicPath: '/proyectos', fields: [title, description, body, image, imageAlt, category, url, ...projectFields] },
   blog: { label: 'Blog', singular: 'Artículo', publicPath: '/blog', fields: [title, description, { ...body, required: true }, image, imageAlt, category] },
   company: { label: 'Empresa', singular: 'Perfil de empresa', publicPath: '/empresa', singleton: true, fields: [title, description, body, image, imageAlt, { key: 'email', label: 'Correo público', kind: 'email', max: 254 }, url] },
+  contact: {
+    label: 'Contacto y redes', singular: 'Configuración de contacto', publicPath: '', singleton: true,
+    fields: [
+      { key: 'email', label: 'Correo público', kind: 'email', max: 254 },
+      { key: 'phone', label: 'Teléfono con código de país (ej. +52)', kind: 'phone', max: 40 },
+      { key: 'whatsapp', label: 'WhatsApp con código de país, sin + ni espacios', kind: 'phone', max: 15 },
+      { key: 'whatsappMessage', label: 'Mensaje inicial de WhatsApp', kind: 'textarea', max: 500 },
+      { key: 'whatsappVisible', label: 'Mostrar WhatsApp', kind: 'checkbox', max: 0 },
+      { key: 'address', label: 'Dirección pública', kind: 'textarea', max: 500 },
+      { key: 'mapsUrl', label: 'Enlace a Google Maps (https)', kind: 'url', max: 2048 },
+      ...socialNetworks.flatMap((network): ContentField[] => [
+        { key: `${network.key}Url`, label: `URL de ${network.label}`, kind: 'url', max: 2048 },
+        { key: `${network.key}Visible`, label: `Mostrar ${network.label}`, kind: 'checkbox', max: 0 },
+      ]),
+    ],
+  },
 };
 
 export function isResource(value: string): value is ResourceName {
@@ -33,5 +51,5 @@ export type ResourceDocument = { published: boolean } & Record<string, string | 
 export type ResourceRecord = { id: string; revision: number; document: ResourceDocument };
 
 export function emptyResource(resource: ResourceName): ResourceDocument {
-  return { ...Object.fromEntries(resourceDefinitions[resource].fields.map(field => [field.key, ''])), published: false };
+  return { ...Object.fromEntries(resourceDefinitions[resource].fields.map(field => [field.key, field.kind === 'checkbox' ? false : ''])), published: false };
 }

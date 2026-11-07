@@ -5,12 +5,13 @@ const createLoader = require('./load-ts.cjs');
 
 test('admin navigation keeps parent sections active on nested editor routes', () => {
   const { adminNavigation, isActiveAdminPath } = createLoader()('src/components/Admin/navigation.ts');
-  assert.equal(adminNavigation.length, 7);
+  assert.equal(adminNavigation.length, 8);
   assert.equal(isActiveAdminPath('/dashboard', '/dashboard'), true);
   assert.equal(isActiveAdminPath('/dashboard/pages/home', '/dashboard'), false);
   assert.equal(isActiveAdminPath('/dashboard/pages/home', '/dashboard/pages'), true);
   assert.equal(isActiveAdminPath('/dashboard/services/new', '/dashboard/services'), true);
   assert.equal(isActiveAdminPath('/dashboard/services-other', '/dashboard/services'), false);
+  assert.equal(isActiveAdminPath('/dashboard/settings/contact', '/dashboard/settings'), true);
 });
 
 function luminance(hex) {

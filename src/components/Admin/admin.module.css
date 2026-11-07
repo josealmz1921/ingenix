@@ -153,6 +153,10 @@
 .loginMark { @apply grid h-[48px] w-[48px] place-items-center rounded-xl; border: 1px solid #355b91; background: var(--admin-selected); color: var(--admin-accent); }
 .loginMark svg { @apply h-[26px] w-[26px]; }
 
+.socialSetting { @apply grid gap-4 border-b pb-5; border-color: var(--admin-border); }
+.socialSetting h2 { @apply flex items-center gap-2 font-semibold; }
+.socialHeader { @apply flex items-center justify-between gap-4; }
+
 /* Public articles remain independent of the admin colour scheme. */
 .article { @apply m-auto max-w-[900px] px-5 py-12; }
 .article h1 { @apply my-4 mx-0; font: 700 clamp(2rem, 5vw, 3.5rem) var(--font-asap-sans), sans-serif; }

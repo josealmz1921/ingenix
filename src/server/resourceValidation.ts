@@ -20,6 +20,12 @@ export function validateResource(resource: ResourceName, input: unknown): Resour
   }
   const result: ResourceDocument = { published: raw.published };
   for (const field of definition.fields) {
+    if (field.kind === 'checkbox') {
+      const value = raw[field.key] ?? false;
+      if (typeof value !== 'boolean') throw new ApiError(400, `${field.label}: valor no válido.`);
+      result[field.key] = value;
+      continue;
+    }
     const value = raw[field.key] ?? '';
     if (typeof value !== 'string' || value.length > field.max) throw new ApiError(400, `${field.label}: máximo ${field.max} caracteres.`);
     const text = value.trim();
@@ -30,6 +36,11 @@ export function validateResource(resource: ResourceName, input: unknown): Resour
       if (!valid) throw new ApiError(400, 'Usa un enlace HTTPS sin credenciales.');
     }
     if (text && field.kind === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) throw new ApiError(400, 'Correo no válido.');
+    if (text && field.kind === 'phone') {
+      const digits = text.replace(/\D/g, '').length;
+      const valid = field.key === 'whatsapp' ? /^[1-9]\d{6,14}$/.test(text) : /^\+?[1-9][\d\s()-]{5,39}$/.test(text) && digits >= 7 && digits <= 15;
+      if (!valid) throw new ApiError(400, `${field.label}: usa un número internacional válido.`);
+    }
     if (text && field.kind === 'category') validateResourceId('categories', text);
     if (text && field.kind === 'image') {
       // Same image policy as the page builder and next/image; no arbitrary hosts.

@@ -69,7 +69,7 @@ test('server composes published home or template using only the public catalogue
     'server-only': {},
     react: { cache: fn => fn },
     './publishedHome': { getPublishedHome: async () => published },
-    './publicContent': { getPublishedCatalog: async section => {
+    './publicContent': { getPublicContact: async () => ({ address: '', links: [] }), getPublishedCatalog: async section => {
       reads.push(section);
       return section === 'services' ? services : [];
     } },
@@ -165,7 +165,10 @@ test('catalogue picker endpoint authorizes before reading and never returns draf
       apiResponse: value => Response.json(value, { headers: { 'cache-control': 'no-store' } }),
       apiError: () => Response.json({ error: 'denied' }, { status: 401 }),
     },
-    './publicContent': { getPublishedCatalog: async () => { reads++; return [record('public')]; } },
+    './publicContent': {
+      getPublishedCatalog: async () => { reads++; return [record('public')]; },
+      getPublicContact: async () => ({ address: '', links: [] }),
+    },
   });
   const { getPageCatalogs } = load('src/server/pageCatalogs.ts');
   assert.equal((await getPageCatalogs(new Request('http://localhost'))).status, 401);

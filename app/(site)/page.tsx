@@ -1,9 +1,10 @@
 import { homePage } from '@/src/content/home';
-import { PageRenderer } from '@/src/page-builder';
+import HomePageRenderer from '@/src/components/Contact/HomePageRenderer';
 import styles from './Home.module.css';
 import type { Metadata } from 'next';
 import { getPublishedHome } from '@/src/server/publishedHome';
 import { getHomeContent } from '@/src/server/homeContent';
+import { getPublicContact } from '@/src/server/publicContent';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,10 +16,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const page = await getHomeContent();
+  const [page, contact] = await Promise.all([getHomeContent(), getPublicContact()]);
   return (
     <main id="contenido" className={styles.home}>
-      <PageRenderer document={page} />
+      <HomePageRenderer page={page} contact={contact} />
     </main>
   );
 }

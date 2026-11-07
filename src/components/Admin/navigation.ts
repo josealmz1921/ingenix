@@ -1,6 +1,6 @@
 import {
   Squares2X2Icon, RectangleGroupIcon, WrenchScrewdriverIcon, TagIcon,
-  BriefcaseIcon, NewspaperIcon, BuildingOffice2Icon,
+  BriefcaseIcon, NewspaperIcon, BuildingOffice2Icon, Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 
 export const adminNavigation = [
@@ -11,6 +11,7 @@ export const adminNavigation = [
   { href: '/dashboard/projects', label: 'Proyectos', Icon: BriefcaseIcon },
   { href: '/dashboard/blog', label: 'Blog', Icon: NewspaperIcon },
   { href: '/dashboard/company', label: 'Empresa', Icon: BuildingOffice2Icon },
+  { href: '/dashboard/settings', label: 'Configuración', Icon: Cog6ToothIcon },
 ] as const;
 
 export function isActiveAdminPath(pathname: string, href: string): boolean {

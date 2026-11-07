@@ -17,7 +17,10 @@ export function inlineTextFields(section: PageSection) {
     }
     const content = getBlockFields(section.type).find(field => field.name === 'content');
     const connected = (section.type === 'cards' || section.type === 'projects') && section.catalog && section.catalog.mode !== 'static';
-    const fields = (content?.fields || []).filter(field => !(connected && field.name === 'items'));
+    const contact = section.id === 'contacto' && section.type === 'text';
+    const fields = (content?.fields || []).filter(field =>
+        !(connected && field.name === 'items') && !(contact && ['actions', 'note'].includes(field.name))
+    );
     visit(fields, section.content as unknown as Record<string, unknown>, 'content');
     return result;
 }

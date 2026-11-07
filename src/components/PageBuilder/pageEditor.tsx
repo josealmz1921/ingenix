@@ -75,6 +75,7 @@ import {
 import CatalogSelection from './CatalogSelection';
 import { usePageCatalogs } from './usePageCatalogs';
 import LoadingPage from '@/src/components/LoadingPage/LoadingPage';
+import { composeHomeContact } from '@/src/content/contact';
 
 async function request(method = 'GET', body?: unknown) {
   const response = await fetch('/api/admin/pages/home', {
@@ -293,15 +294,24 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
     ? getBlockFields(selected.type)
         .filter((field) => field.name !== 'catalog')
         .map((field) =>
-          field.name === 'content' && isCatalogSection(selected)
-            ? { ...field, fields: field.fields?.filter((item) => item.name !== 'items') }
+          field.name === 'content'
+            ? {
+                ...field,
+                fields: field.fields?.filter((item) =>
+                  !(isCatalogSection(selected) && item.name === 'items')
+                  && !(selected.id === 'contacto' && selected.type === 'text' && ['actions', 'note'].includes(item.name)),
+                ),
+              }
             : field,
         )
     : [];
-  const renderedDocument = composeHomeCatalogs(
-    document,
-    catalogState.catalogs.services,
-    catalogState.catalogs.projects,
+  const renderedDocument = composeHomeContact(
+    composeHomeCatalogs(
+      document,
+      catalogState.catalogs.services,
+      catalogState.catalogs.projects,
+    ),
+    catalogState.catalogs.contact,
   );
   const currentIssues = issues.length ? issues : validation.success ? [] : validation.issues;
 
@@ -903,6 +913,7 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
                     return (
                       <div key={block.id}>
                         <SortableCanvasBlock
+                          contact={catalogState.catalogs.contact}
                           block={renderedDocument.sections[index]}
                           index={index}
                           page={renderedDocument}
@@ -1019,6 +1030,13 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
                   className={styles.inspectorFields}
                   key={selectedIndex}
                 >
+                  {selected.id === 'contacto' && selected.type === 'text' && (
+                    <p className={styles.help}>
+                      Los canales e iconos se administran en{' '}
+                      <Link href="/dashboard/settings/contact">Configuración → Contacto y redes</Link>.
+                      Aquí editas el diseño y los encabezados. Sin datos públicos, el bloque no se muestra.
+                    </p>
+                  )}
                   {(selected.type === 'cards' || selected.type === 'projects') && (
                     <CatalogSelection
                       section={selected}

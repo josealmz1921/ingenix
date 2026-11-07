@@ -1,0 +1,37 @@
+.root.root {
+  @apply relative m-0 flex min-h-[44px] cursor-pointer items-center justify-between gap-4;
+}
+
+.copy { @apply grid gap-1; }
+.description { color: var(--admin-muted); font-size: .75rem; font-weight: 400; }
+.hiddenLabel { @apply sr-only; }
+
+/* Override generic catalogue input rules while retaining the native checkbox. */
+.root .control[type='checkbox'] {
+  @apply sr-only;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+.track {
+  @apply relative block h-6 w-11 shrink-0 rounded-full;
+  background: var(--admin-border);
+  transition: background-color .15s;
+}
+
+.thumb {
+  @apply absolute left-[3px] top-[3px] h-[18px] w-[18px] rounded-full;
+  background: var(--admin-text);
+  transition: transform .15s;
+}
+
+.control:checked + .track { background: var(--admin-primary); }
+.control:checked + .track .thumb { @apply translate-x-5; }
+.control:focus-visible + .track { outline: 2px solid var(--admin-accent); outline-offset: 4px; }
+.root[data-disabled='true'] { @apply cursor-not-allowed opacity-60; }
+
+@media (prefers-reduced-motion: reduce) {
+  .track, .thumb { @apply transition-none; }
+}

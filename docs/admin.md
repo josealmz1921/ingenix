@@ -45,6 +45,7 @@ El tema administrativo **no define tokens `--pb-*` ni modifica estilos públicos
 - `/dashboard`: resumen y acceso a páginas, servicios, proyectos, categorías, blog y empresa.
 - `/dashboard/pages/home`: edita **toda la portada**; se mantienen colores y tipografías de Ingenix. La plantilla local copia `src/content/home.ts` y nunca escribe en la base por sí sola.
 - `/dashboard/{services|projects|categories|blog|company}`: listas de hasta 50 registros por página; formularios en `/{id}` o `/new`.
+- `/dashboard/settings/contact`: configuración global de contacto y redes, independiente del perfil de empresa.
 - `/servicios`, `/proyectos`, `/blog`: listados públicos paginados; detalles en `/{id}`. Categorías organizan registros y no crean páginas públicas propias.
 - `/empresa`: perfil único publicado (`profile`). Se enlaza desde el pie cuando existe.
 - `/builder-preview`: documento local de la sesión, solo para administradores; noindex y sin scripts de medición.
@@ -60,6 +61,18 @@ La configuración `catalog` guarda únicamente `mode` (`all`, `selected` o `stat
 El lienzo, la vista previa privada y el home usan el mismo compositor y registros publicados. `/api/admin/pages/catalogs` exige autorización administrativa y responde `no-store`; el selector no queda limitado a los primeros 25 registros del listado público. **Actualizar catálogo** refresca sus textos e imágenes sin alterar la selección ni escribir datos. Los textos de tarjetas conectadas no se pueden editar en línea; el inspector enlaza a Servicios/Proyectos. Imágenes, empresas, logos y etiquetas son opcionales y nunca se inventan para completar un registro.
 
 Los documentos antiguos con secciones `servicios`/`cards` y `proyectos`/`projects` se adaptan en memoria a `all` sin cambiar su apariencia ni escribir en Firestore. La próxima operación explícita de guardar/publicar conserva esa configuración por referencias. Los bloques conectados mantienen su origen aunque cambies su identificador; el modo `static` desactiva explícitamente la conexión para usar contenido local. Las tarjetas de experiencia y otros bloques locales no se migran. La plantilla original sigue disponible para importar datos. `PAGE_BUILDER_HOME_DISABLED` restaura su estructura, pero no desconecta los catálogos. Blog y empresa mantienen páginas propias, sin sustituir automáticamente los datos de marca, correo o textos legales del encabezado/pie.
+
+### Contacto y redes sociales
+
+**Configuración → Contacto y redes** administra un único documento `cms_contact/profile`, con correo, teléfono internacional, número y mensaje inicial de WhatsApp, dirección, enlace HTTPS a Maps y URLs de Facebook, Instagram, LinkedIn, X, YouTube, TikTok y GitHub. WhatsApp y cada red tienen visibilidad propia; URL vacía o interruptor desactivado significa que no se muestran. Los iconos de marca se importan de `react-icons/fa6`, con texto accesible y SVG decorativo.
+
+Todos los campos son opcionales y empiezan vacíos. Abrir el formulario no crea datos. La API reutiliza autorización administrativa, límite de peticiones, revisión optimista y validación de los catálogos; solo admite el ID `profile`. **Publicar configuración de contacto** y guardar muestra los datos completados tras confirmar con SweetAlert2. Despublicar una configuración previamente pública también pide confirmación. No hay instantáneas separadas para este documento: guardar con publicación activa modifica el sitio al recargarlo.
+
+Los estados de visibilidad usan `src/components/Switch/Switch.tsx`: interruptor compacto junto al nombre de cada red, checkbox nativo con rol `switch`, etiqueta accesible, foco visible y uso por teclado. WhatsApp y la publicación general usan el mismo componente. Los cambios siguen requiriendo guardar; activar un interruptor no publica por sí solo.
+
+Sin documento, sin publicación, sin datos utilizables o ante una lectura inválida/fallida, no se muestran iconos, enlaces, título ni bloque vacío de contacto. No se usan valores de ejemplo ni `NEXT_PUBLIC_CONTACT_EMAIL` como respaldo. El Footer muestra únicamente los canales reales; el Header enlaza al bloque `contacto` solo cuando ese bloque existe, está visible y hay datos. Las llamadas a `#contacto` se retiran en tiempo de lectura si el bloque no está disponible.
+
+El bloque `contacto` de tipo `text` conserva posición, encabezados, variante y visibilidad del PageBuilder. Sus canales se resuelven en el host mediante `composeHomeContact` y `HomePageRenderer`, sin copiar datos de configuración al borrador ni introducir iconos o Firebase en el módulo portable. El lienzo refleja la disponibilidad; la vista previa privada y la portada muestran los canales e iconos reales. Los botones y notas locales antiguos de ese bloque no sustituyen la configuración global. Eliminar o esconder el bloque no elimina los datos del Footer. Cambiar un canal no requiere volver a publicar la portada.
 
 ### Bloques reutilizables adicionales
 
