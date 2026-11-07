@@ -1,22 +1,30 @@
 import Header from '@/src/components/Header/Header';
 import Footer from '@/src/components/Footer/Footer';
-import { homeNavigation } from '@/src/content/home';
-import { getPublishedHome } from '@/src/server/publishedHome';
-import { getPublicRecord } from '@/src/server/publicContent';
+import { getHomeContent } from '@/src/server/homeContent';
+import { getPublicContact, getPublicRecord } from '@/src/server/publicContent';
+import { contactSectionAvailable } from '@/src/content/contact';
 
 const Layout = async ({ children }: { children: React.ReactNode }) => {
-    const [published, company] = await Promise.all([getPublishedHome(), getPublicRecord('empresa', 'profile')]);
-    const navigation = published ? published.sections.filter(section => section.visible && section.navigationLabel).map(section => ({ label: section.navigationLabel!, href: `/#${section.id}` })) : homeNavigation;
-    return (
-        <div>
-            <a className="skip-link" href="#contenido">Saltar al contenido</a>
-            <Header navigation={navigation} />
-            <div>
-                {children}
-            </div>
-            <Footer navigation={navigation} companyAvailable={Boolean(company)} />
-        </div>
-    )
-}
+  const [page, company, contact] = await Promise.all([
+    getHomeContent(),
+    getPublicRecord('empresa', 'profile'),
+    getPublicContact(),
+  ]);
+  const navigation = page.sections
+    .filter((section) => section.visible && section.navigationLabel)
+    .map((section) => ({ label: section.navigationLabel!, href: `/#${section.id}` }));
+  return (
+    <div>
+      <a className="skip-link" href="#contenido">
+        Saltar al contenido
+      </a>
+      <Header navigation={navigation} contactAvailable={contactSectionAvailable(page)} />
+      <div>
+        {children}
+      </div>
+      <Footer navigation={navigation} companyAvailable={Boolean(company)} contact={contact} />
+    </div>
+  );
+};
 
 export default Layout;

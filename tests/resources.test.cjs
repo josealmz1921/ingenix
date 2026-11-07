@@ -73,6 +73,8 @@ test('all resource operations authorize before database access', async () => {
       () => api.readResources(request(null, token, 'GET'), 'blog', 'article'),
       () => api.writeResource(request({ revision: 0, document: document() }, token), 'projects', 'demo'),
       () => api.writeResource(request({ revision: 1 }, token, 'DELETE'), 'company', 'profile', true),
+      () => api.readResources(request(null, token, 'GET'), 'contact', 'profile'),
+      () => api.writeResource(request({ revision: 0, document: { published: true } }, token), 'contact', 'profile'),
     ]) assert.equal((await operation()).status, !token || token === 'revoked' ? 401 : 403);
     assert.deepEqual(counters(), { reads: 0, writes: 0, dbCalls: 0 });
   }
@@ -155,4 +157,42 @@ test('public articles render stored markup as literal text, never executable HTM
   }));
   assert.match(html, /&lt;script&gt;/);
   assert.doesNotMatch(html, /<script/);
+});
+
+test('contact settings start empty, enforce a singleton, and use optimistic revisions', async () => {
+  const { api, store } = setup();
+  const initial = await api.readResources(request(null, 'admin', 'GET'), 'contact', 'profile');
+  assert.equal(initial.status, 200);
+  const empty = await initial.json();
+  assert.equal(empty.revision, 0);
+  assert.equal(empty.document.published, false);
+  assert.equal(empty.document.facebookVisible, false);
+  assert.equal(store.size, 0);
+  assert.equal((await api.writeResource(request({ revision: 0, document: { published: true } }), 'contact', 'other')).status, 400);
+  assert.equal((await api.writeResource(request({ revision: 0, document: { published: true, email: 'hello@example.test' } }), 'contact', 'profile')).status, 200);
+  assert.equal(store.get('cms_contact/profile').revision, 1);
+  assert.equal((await api.writeResource(request({ revision: 0, document: { published: true } }), 'contact', 'profile')).status, 409);
+});
+
+test('public contact fails closed, excludes hidden channels, and reflects removal without environment fallback', async (t) => {
+  const original = process.env.FIREBASE_ADMIN_PROJECT_ID;
+  process.env.FIREBASE_ADMIN_PROJECT_ID = 'demo-ingenix-security';
+  t.after(() => { if (original === undefined) delete process.env.FIREBASE_ADMIN_PROJECT_ID; else process.env.FIREBASE_ADMIN_PROJECT_ID = original; });
+  const { load, store } = setup();
+  const { getPublicContact } = load('src/server/publicContent.ts');
+  assert.deepEqual(await getPublicContact(), { address: '', links: [] });
+  const doc = { published: true, email: 'hello@example.test', facebookUrl: 'https://facebook.com/example', facebookVisible: false };
+  store.set('cms_contact/profile', { document: doc, revision: 5, updatedBy: 'PRIVATE' });
+  const contact = await getPublicContact();
+  assert.deepEqual(contact.links.map(link => link.channel), ['email']);
+  assert.doesNotMatch(JSON.stringify(contact), /facebook|PRIVATE|revision|updatedBy/);
+  doc.facebookVisible = true;
+  assert.deepEqual((await getPublicContact()).links.map(link => link.channel), ['email', 'facebook']);
+  doc.published = false;
+  assert.deepEqual(await getPublicContact(), { address: '', links: [] });
+  doc.published = true;
+  doc.email = 'bad';
+  assert.deepEqual(await getPublicContact(), { address: '', links: [] });
+  store.delete('cms_contact/profile');
+  assert.deepEqual(await getPublicContact(), { address: '', links: [] });
 });

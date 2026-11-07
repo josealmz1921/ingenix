@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { onIdTokenChanged } from 'firebase/auth';
-import { PageRenderer } from '@/src/page-builder';
+import HomePageRenderer from '@/src/components/Contact/HomePageRenderer';
+import { composeHomeContact, contactSectionAvailable, emptyContact, type PublicContact } from '@/src/content/contact';
 import { validatePageDocument, type PageDocument } from '@/src/page-builder/editor';
 import { PREVIEW_KEY, pageHomeErrors } from '@/src/utilities/pageBuilder';
 import Header from '@/src/components/Header/Header';
@@ -14,6 +15,7 @@ import { loadPageCatalogs } from './catalogRequest';
 
 export default function BuilderPreview() {
   const [document, setDocument] = useState<PageDocument | null>(null);
+  const [contact, setContact] = useState<PublicContact>(emptyContact);
   const [message, setMessage] = useState('Comprobando acceso…');
   useEffect(() => {
     let generation = 0;
@@ -36,11 +38,15 @@ export default function BuilderPreview() {
               throw new Error('El borrador no es válido para la vista previa.');
             const catalogs = await loadPageCatalogs();
             if (current === generation) {
+              setContact(catalogs.contact);
               setDocument(
-                composeHomeCatalogs(
-                  normalizeHomeCatalogs(result.data),
-                  catalogs.services,
-                  catalogs.projects,
+                composeHomeContact(
+                  composeHomeCatalogs(
+                    normalizeHomeCatalogs(result.data),
+                    catalogs.services,
+                    catalogs.projects,
+                  ),
+                  catalogs.contact,
                 ),
               );
             }
@@ -79,11 +85,11 @@ export default function BuilderPreview() {
       <div style={{ padding: '.6rem', textAlign: 'center' }}>
         Vista previa privada · cambios locales, no publicados
       </div>
-      <Header navigation={navigation} />
+      <Header navigation={navigation} contactAvailable={contactSectionAvailable(document)} />
       <main id="contenido">
-        <PageRenderer document={document} mode="draft" theme={builderTheme} />
+        <HomePageRenderer page={document} contact={contact} mode="draft" theme={builderTheme} />
       </main>
-      <Footer navigation={navigation} />
+      <Footer navigation={navigation} contact={contact} />
     </>
   );
 }

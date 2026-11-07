@@ -1,8 +1,9 @@
 import type { ResourceRecord } from '@/src/content/adminResources';
 import { adminHeaders } from '@/src/firebase/adminRequest';
+import { emptyContact, type PublicContact } from '@/src/content/contact';
 
-export type PageCatalogs = { services: ResourceRecord[]; projects: ResourceRecord[] };
-export const emptyCatalogs: PageCatalogs = { services: [], projects: [] };
+export type PageCatalogs = { services: ResourceRecord[]; projects: ResourceRecord[]; contact: PublicContact };
+export const emptyCatalogs: PageCatalogs = { services: [], projects: [], contact: emptyContact };
 
 export async function loadPageCatalogs(): Promise<PageCatalogs> {
   const response = await fetch('/api/admin/pages/catalogs', {
@@ -14,5 +15,5 @@ export async function loadPageCatalogs(): Promise<PageCatalogs> {
   if (!Array.isArray(result.services) || !Array.isArray(result.projects)) {
     throw new Error('La respuesta de los catálogos no es válida.');
   }
-  return result;
+  return { ...result, contact: result.contact ?? emptyContact };
 }

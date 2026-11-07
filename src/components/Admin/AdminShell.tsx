@@ -8,6 +8,7 @@ import { AuthProvider, logout, useAdminAccess } from './AuthProvider';
 import AdminNavigation from './AdminNavigation';
 import { adminNavigation, isActiveAdminPath } from './navigation';
 import styles from './admin.module.css';
+import LoadingPage from '@/src/components/LoadingPage/LoadingPage';
 
 function ProtectedShell({ children }: { children: ReactNode }) {
   const access = useAdminAccess();
@@ -15,8 +16,8 @@ function ProtectedShell({ children }: { children: ReactNode }) {
   const [error, setError] = useState('');
   if (access.loading) {
     return (
-      <main className={styles.center}>
-        <p role="status">Comprobando acceso…</p>
+      <main>
+        <LoadingPage message="Comprobando acceso…" fullScreen />
       </main>
     );
   }

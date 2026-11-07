@@ -33,7 +33,7 @@ export default function ResourceField({ field, value, categories, onChange }: Pr
       ) : (
         <input
           {...common}
-          type={field.kind === 'url' || field.kind === 'email' ? field.kind : 'text'}
+          type={field.kind === 'phone' ? 'tel' : field.kind === 'url' || field.kind === 'email' ? field.kind : 'text'}
           maxLength={field.max}
         />
       )}

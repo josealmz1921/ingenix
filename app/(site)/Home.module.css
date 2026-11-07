@@ -1,1 +1,4 @@
-.home { padding: 1.5rem clamp(1rem, 4vw, 3rem) 4rem; }
+.home {
+  @apply pt-6 pb-16;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}

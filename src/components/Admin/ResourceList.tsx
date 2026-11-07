@@ -9,6 +9,7 @@ import {
 } from '@/src/content/adminResources';
 import { contentRequest } from './contentRequest';
 import styles from './admin.module.css';
+import LoadingPage from '@/src/components/LoadingPage/LoadingPage';
 
 export default function ResourceList({ resource }: { resource: ResourceName }) {
   const definition = resourceDefinitions[resource];
@@ -75,7 +76,8 @@ export default function ResourceList({ resource }: { resource: ResourceName }) {
           </li>
         ))}
       </ul>
-      {busy && <p role="status">Cargando…</p>}
+      {busy && !records.length && <LoadingPage message="Cargando catálogo…" />}
+      {busy && records.length > 0 && <p role="status">Cargando más registros…</p>}
       {!busy && !error && !records.length && <p>No hay contenido todavía.</p>}
       {next && (
         <button disabled={busy} onClick={loadMore}>

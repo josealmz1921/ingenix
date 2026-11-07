@@ -1,57 +1,49 @@
 .Carousel {
-  width: 100%;
-  padding-bottom: 3.5rem;
+  @apply w-full pb-14;
 }
 
 .Carousel :global(.slick-list) {
-  width: 100%;
-  margin: 0;
+  @apply m-0 w-full;
 }
 
 .Carousel :global(.slick-track) {
-  display: flex;
+  @apply flex;
 }
 
 .Carousel :global(.slick-slide) {
-  height: auto;
-  padding: 0 0.5rem;
+  @apply h-auto px-2 py-0;
 }
 
 .Carousel :global(.slick-slide > div) {
-  height: 100%;
+  @apply h-full;
 }
 
 /* Arrows */
 
 .Carousel :global(.slick-prev),
 .Carousel :global(.slick-next) {
-  z-index: 2;
-  top: auto;
-  bottom: -3.5rem;
-  width: 36px;
-  height: 36px;
+  @apply z-[2] top-auto -bottom-14 h-[36px] w-[36px];
   transform: none;
   border: 1px solid rgb(255 255 255 / 0.15);
   border-radius: 50%;
-  background: #161B2B;
+  @apply bg-secondary;
 }
 
 .Carousel :global(.slick-prev) {
-  left: auto;
-  right: 3.25rem;
+  @apply left-auto right-[3.25rem];
 }
 
 .Carousel :global(.slick-next) {
-  right: 0.5rem;
+  @apply right-2;
 }
 
 .Carousel :global(.slick-arrow:focus-visible) {
   outline: 2px solid #1164FF;
-  outline-offset: 4px;
+  @apply outline-offset-4;
 }
 
 /* Dots */
 
 .Carousel :global(.slick-dots) {
-  bottom: 1rem;
+  @apply bottom-4;
 }

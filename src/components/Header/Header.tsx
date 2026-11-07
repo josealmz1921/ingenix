@@ -8,9 +8,10 @@ import styles from "./Header.module.css";
 
 interface HeaderProps {
   navigation?: { label: string; href: string }[];
+  contactAvailable?: boolean;
 }
 
-const Header: FC<HeaderProps> = ({ navigation = [] }) => {
+const Header: FC<HeaderProps> = ({ navigation = [], contactAvailable = false }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -52,7 +53,9 @@ const Header: FC<HeaderProps> = ({ navigation = [] }) => {
         if (!event.currentTarget.contains(event.relatedTarget)) setIsMenuOpen(false);
       }}
     >
-      <Link href="/" className={styles.logo} aria-label="Ingenix, inicio">Ingenix<span className={styles.logoDot}>.</span></Link>
+      <Link href="/" className={styles.logo} aria-label="Ingenix, inicio">
+        Ingenix<span className={styles.logoDot}>.</span>
+      </Link>
       <button
         ref={toggleRef}
         type="button"
@@ -70,15 +73,25 @@ const Header: FC<HeaderProps> = ({ navigation = [] }) => {
         className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ""}`}
         onClick={() => setIsMenuOpen(false)}
       >
-        {navigation.map((item) => <Link key={item.href} className={styles.link} href={item.href}>{item.label}</Link>)}
-        <Link className={`${styles.link} ${styles.mobileContact}`} href="/#contacto">Contacto</Link>
+        {navigation.map((item) => (
+          <Link key={item.href} className={styles.link} href={item.href}>
+            {item.label}
+          </Link>
+        ))}
+        {contactAvailable && (
+          <Link className={`${styles.link} ${styles.mobileContact}`} href="/#contacto">
+            Contacto
+          </Link>
+        )}
       </nav>
-      <Link className={styles.linkContact} href="/#contacto">
-        <span className={styles.button}>
-          Hablemos de tu proyecto
-          <ArrowRightIcon className={styles.icon} />
-        </span>
-      </Link>
+      {contactAvailable && (
+        <Link className={styles.linkContact} href="/#contacto">
+          <span className={styles.button}>
+            Hablemos de tu proyecto
+            <ArrowRightIcon className={styles.icon} />
+          </span>
+        </Link>
+      )}
     </header>
   );
 };

@@ -1,6 +1,6 @@
 import 'server-only';
 import { FieldValue } from 'firebase-admin/firestore';
-import { isResource, type ResourceName } from '@/src/content/adminResources';
+import { emptyResource, isResource, type ResourceName } from '@/src/content/adminResources';
 import { adminDb } from './firebaseAdmin';
 import { ApiError, apiError, apiResponse, limitAdminRequests, readJson, requireAdmin } from './adminApi';
 import { validateResource, validateResourceId } from './resourceValidation';
@@ -18,6 +18,9 @@ export async function readResources(request: Request, name: string, id?: string)
     const collection = resourceCollection(resource);
     if (id) {
       const snapshot = await collection.doc(validateResourceId(resource, id)).get();
+      if (!snapshot.exists && resource === 'contact') {
+        return apiResponse({ id, revision: 0, document: emptyResource(resource) });
+      }
       if (!snapshot.exists) throw new ApiError(404, 'Contenido no encontrado.');
       const data = snapshot.data()!;
       return apiResponse({ id: snapshot.id, revision: data.revision, document: data.document });

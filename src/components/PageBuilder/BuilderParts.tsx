@@ -16,6 +16,8 @@ import {
   ChartBarIcon,
 } from '@heroicons/react/24/outline';
 import { PageRenderer } from '@/src/page-builder';
+import HomePageRenderer from '@/src/components/Contact/HomePageRenderer';
+import type { PublicContact } from '@/src/content/contact';
 import { builderTheme } from './theme';
 import {
   blockRegistry,
@@ -140,6 +142,7 @@ export function SortableCanvasBlock({
   onSelect,
   onTextChange,
   toolbar,
+  contact,
 }: {
   block: PageSection;
   index: number;
@@ -151,6 +154,7 @@ export function SortableCanvasBlock({
   onSelect: () => void;
   onTextChange: (path: string, value: string) => void;
   toolbar: ReactNode;
+  contact?: PublicContact;
 }) {
   const {
     attributes,
@@ -224,7 +228,15 @@ export function SortableCanvasBlock({
           {!block.visible && (
             <p className={styles.hiddenNotice}>Bloque oculto · No se mostrará en la página</p>
           )}
-          {valid ? (
+          {valid && block.id === 'contacto' && block.type === 'text' && contact ? (
+            <HomePageRenderer
+              page={{ ...page, sections: [{ ...block, visible: true }] }}
+              contact={contact}
+              mode="draft"
+              theme={builderTheme}
+              renderText={renderText}
+            />
+          ) : valid ? (
             <PageRenderer
               document={{ ...page, sections: [{ ...block, visible: true }] }}
               mode="draft"

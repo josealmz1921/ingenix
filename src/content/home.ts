@@ -116,8 +116,7 @@ export const homeSections: PageSection[] = [
       eyebrow: 'El siguiente paso',
       title: 'Hablemos de lo que tu empresa necesita.',
       description: 'Cuéntanos qué quieres lograr, qué proceso necesitas mejorar o qué producto tienes en mente. Empecemos por entender tu proyecto.',
-      actions: site.email ? [{ label: 'Cuéntanos tu proyecto ↗', href: `mailto:${site.email}`, priority: 'primary' }] : [],
-      note: site.email ? undefined : 'Próximamente publicaremos nuestros canales de contacto.',
+      actions: [],
     },
   },
 ];
