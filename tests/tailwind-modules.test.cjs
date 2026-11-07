@@ -11,6 +11,7 @@ const files = [
   'src/components/Admin/confirmation.module.css',
   'src/components/Carousel/Carousel.module.css',
   'src/components/Contact/contact.module.css',
+  'src/components/Dropzone/dropzone.module.css',
   'src/components/Switch/switch.module.css',
   'src/components/Footer/Footer.module.css',
   'src/components/GridCard/GridCard.module.css',

@@ -1,0 +1,16 @@
+.root { @apply grid min-w-0 gap-3; }
+.label { color: var(--admin-text); font-size: .8rem; font-weight: 500; }
+.preview { @apply flex h-48 items-center justify-center overflow-hidden rounded-lg p-3; background: var(--admin-input); border: 1px solid var(--admin-border); }
+.preview img { @apply h-full max-w-full object-contain; }
+.target { @apply grid min-h-36 cursor-pointer place-items-center gap-2 rounded-lg border border-dashed p-5 text-center; border-color: var(--admin-border); background: var(--admin-input); color: var(--admin-text); font-size: .8rem; transition: border-color .15s, background-color .15s; }
+.target:hover, .target.active { border-color: var(--admin-accent); background: var(--admin-selected); }
+.target[aria-disabled='true'] { @apply cursor-not-allowed opacity-60; }
+.target:focus-visible { outline: 2px solid var(--admin-accent); outline-offset: 4px; }
+.root .target svg { @apply h-7 w-7; color: var(--admin-accent); }
+.help { color: var(--admin-muted); font-size: .7rem; }
+.actions { @apply flex flex-wrap gap-2; }
+.root .actions button { @apply min-h-[44px] rounded-md px-3 py-2; background: transparent; border: 1px solid var(--admin-border); color: var(--admin-text); }
+.root .actions button:hover:not(:disabled) { background: var(--admin-raised); border-color: var(--admin-accent); }
+.root .actions svg { @apply h-4 w-4; }
+.root > [role='status'] { color: var(--admin-success); font-size: .75rem; }
+@media (prefers-reduced-motion: reduce) { .target { @apply transition-none; } }

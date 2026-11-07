@@ -74,6 +74,12 @@ Sin documento, sin publicación, sin datos utilizables o ante una lectura invál
 
 El bloque `contacto` de tipo `text` conserva posición, encabezados, variante y visibilidad del PageBuilder. Sus canales se resuelven en el host mediante `composeHomeContact` y `HomePageRenderer`, sin copiar datos de configuración al borrador ni introducir iconos o Firebase en el módulo portable. El lienzo refleja la disponibilidad; la vista previa privada y la portada muestran los canales e iconos reales. Los botones y notas locales antiguos de ese bloque no sustituyen la configuración global. Eliminar o esconder el bloque no elimina los datos del Footer. Cambiar un canal no requiere volver a publicar la portada.
 
+### Imágenes del administrador
+
+Servicios, Proyectos, Blog y Empresa usan `src/components/Dropzone/Dropzone.tsx`, adaptado al modo de un solo archivo del Dropzone de Holística. Usa `react-dropzone` para selección, arrastre, teclado y rechazo de archivos; admite una imagen JPG/PNG de hasta 5 MiB por campo. No hay entrada manual de URL. En proyectos, la captura y el logo tienen Dropzones independientes y se asignan a `image` y `logo`, respectivamente. Las URLs existentes se mantienen internamente y se muestran como miniaturas, sin migrar documentos.
+
+La selección genera una miniatura local durante la subida firmada a Cloudinary y muestra estado o error junto al campo. Mientras sube, se bloquean guardado y otras operaciones; la protección al salir también cubre la subida. Un reemplazo fallido conserva la imagen anterior. **Quitar** pide confirmación y limpia la referencia y su texto alternativo; no elimina el archivo de Cloudinary. Subir o quitar requiere guardar el registro para persistirlo. Los textos alternativos siguen siendo obligatorios al guardar una imagen. El PageBuilder conserva sus controles de imagen actuales.
+
 ### Bloques reutilizables adicionales
 
 El catálogo del constructor ofrece **Carrusel** e **Indicadores de progreso**. El carrusel admite tarjetas con imágenes/enlaces, variantes con imagen superior o compacta y columnas responsivas. Los indicadores admiten títulos, valores actuales y máximos, en lista o presentación compacta. Ambos permiten hasta 30 elementos; una lista vacía se guarda como borrador, pero no se puede publicar. Los valores actuales de progreso no pueden superar su máximo ni ser negativos; no son métricas automáticas del negocio.

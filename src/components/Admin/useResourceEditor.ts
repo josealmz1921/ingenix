@@ -22,6 +22,7 @@ export function useResourceEditor(resource: ResourceName, id: string) {
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const dirty = JSON.stringify(document) !== saved;
@@ -62,11 +63,11 @@ export function useResourceEditor(resource: ResourceName, id: string) {
   }, [creating, definition, id, resource]);
 
   useEffect(() => {
-    if (!dirty) return;
+    if (!dirty && !uploadingField) return;
     function warn(event: BeforeUnloadEvent) { event.preventDefault(); event.returnValue = ''; }
     window.addEventListener('beforeunload', warn);
     return () => window.removeEventListener('beforeunload', warn);
-  }, [dirty]);
+  }, [dirty, uploadingField]);
 
   function change(key: string, value: string | boolean) {
     setDocument(current => ({ ...current, [key]: value }));
@@ -119,14 +120,45 @@ export function useResourceEditor(resource: ResourceName, id: string) {
     });
   }
 
-  async function upload(file?: File) {
-    if (!file) return;
-    await perform(async () => {
+  async function upload(key: string, file: File) {
+    if (!definition.fields.some(field => field.key === key && field.kind === 'image')) {
+      throw new Error('Campo de imagen no válido.');
+    }
+    if (pending.current || loading || loadFailed) {
+      throw new Error('Espera a que termine la operación actual.');
+    }
+    pending.current = true;
+    setBusy(true);
+    setUploadingField(key);
+    setError('');
+    setMessage('');
+    try {
       const result = await uploadImage(file);
-      change('image', result.secure_url);
+      change(key, result.secure_url);
+    } finally {
+      pending.current = false;
+      setBusy(false);
+      setUploadingField(null);
+    }
+  }
+
+  async function removeImage(key: string) {
+    if (!definition.fields.some(field => field.key === key && field.kind === 'image')) return;
+    await perform(async () => {
+      const result = await Swal.fire({
+        ...confirmationTheme(true),
+        title: '¿Quitar esta imagen?',
+        text: 'Se quitará del registro al guardar. El archivo no se elimina de Cloudinary.',
+        icon: 'warning',
+        confirmButtonText: 'Quitar imagen',
+      });
+      if (!result.isConfirmed) return;
+      const altKey = key === 'logo' ? 'logoAlt' : 'imageAlt';
+      setDocument(current => ({ ...current, [key]: '', [altKey]: '' }));
+      setMessage('');
     });
   }
 
   return { definition, creating, document, slug, setSlug, revision, categories, loading, busy,
-    error, message, dirty, disabled: busy || loading || loadFailed, change, save, remove, upload };
+    error, message, dirty, disabled: busy || loading || loadFailed, change, save, remove, upload, uploadingField, removeImage };
 }

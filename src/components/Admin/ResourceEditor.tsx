@@ -6,6 +6,8 @@ import { useResourceEditor } from './useResourceEditor';
 import ResourceField from './ResourceField';
 import styles from './admin.module.css';
 import LoadingPage from '@/src/components/LoadingPage/LoadingPage';
+import Dropzone from '@/src/components/Dropzone/Dropzone';
+import Switch from '@/src/components/Switch/Switch';
 
 export default function ResourceEditor({ resource, id }: { resource: ResourceName; id: string }) {
   const editor = useResourceEditor(resource, id);
@@ -22,6 +24,9 @@ export default function ResourceEditor({ resource, id }: { resource: ResourceNam
         {dirty ? 'Cambios sin guardar' : `Revisión ${revision}`} · El contenido se guarda como texto
         plano, sin interpretar HTML.
       </p>
+      {definition.fields.some((field) => field.kind === 'image') && (
+        <p>Las imágenes se asocian al registro al guardar. Cada campo admite una sola imagen.</p>
+      )}
       {loading && <LoadingPage message="Cargando contenido…" />}
       {error && <p role="alert">{error}</p>}
       {message && <p role="status">{message}</p>}
@@ -42,37 +47,37 @@ export default function ResourceEditor({ resource, id }: { resource: ResourceNam
             </label>
           )}
 
-          {definition.fields.map((field) => (
-            <ResourceField
-              key={field.key}
-              field={field}
-              value={String(document[field.key] || '')}
-              categories={editor.categories}
-              onChange={(value) => editor.change(field.key, value)}
-            />
-          ))}
-
-          {definition.fields.some((field) => field.kind === 'image') && (
-            <label>
-              Subir imagen (JPG/PNG, máximo 5 MiB)
-              <input
-                type="file"
-                accept="image/jpeg,image/png"
-                onChange={(event) => {
-                  void editor.upload(event.target.files?.[0]);
-                  event.target.value = '';
-                }}
+          {definition.fields.map((field) => {
+            if (field.kind === 'image') {
+              return (
+                <Dropzone
+                  key={field.key}
+                  label={field.label}
+                  value={String(document[field.key] || '')}
+                  alt={String(document[field.key === 'logo' ? 'logoAlt' : 'imageAlt'] || '')}
+                  disabled={disabled}
+                  uploading={editor.uploadingField === field.key}
+                  onUpload={(file) => editor.upload(field.key, file)}
+                  onRemove={() => { void editor.removeImage(field.key); }}
+                />
+              );
+            }
+            return (
+              <ResourceField
+                key={field.key}
+                field={field}
+                value={String(document[field.key] || '')}
+                categories={editor.categories}
+                onChange={(value) => editor.change(field.key, value)}
               />
-            </label>
-          )}
-          <label>
-            Publicado
-            <input
-              type="checkbox"
-              checked={document.published}
-              onChange={(event) => editor.change('published', event.target.checked)}
-            />
-          </label>
+            );
+          })}
+          <Switch
+            label="Publicado"
+            checked={document.published}
+            disabled={disabled}
+            onChange={(checked) => editor.change('published', checked)}
+          />
           <p>
             Desmarcar Publicado y guardar retira el contenido del sitio. Los servicios y proyectos
             publicados pueden mostrarse en la portada según la selección configurada en Páginas.
