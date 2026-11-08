@@ -25,7 +25,7 @@ export default function ResourceEditor({ resource, id }: { resource: ResourceNam
         plano, sin interpretar HTML.
       </p>
       {definition.fields.some((field) => field.kind === 'image') && (
-        <p>Las imágenes se asocian al registro al guardar. Cada campo admite una sola imagen.</p>
+        <p>Selecciona o arrastra las imágenes. Se subirán únicamente al guardar. Cada campo admite una sola imagen.</p>
       )}
       {loading && <LoadingPage message="Cargando contenido…" />}
       {error && <p role="alert">{error}</p>}
@@ -53,12 +53,14 @@ export default function ResourceEditor({ resource, id }: { resource: ResourceNam
                 <Dropzone
                   key={field.key}
                   label={field.label}
-                  value={String(document[field.key] || '')}
+                  values={editor.assets[field.key] ?? (
+                    document[field.key] ? [{ preview: String(document[field.key]) }] : []
+                  )}
+                  maxFiles={1}
                   alt={String(document[field.key === 'logo' ? 'logoAlt' : 'imageAlt'] || '')}
                   disabled={disabled}
                   uploading={editor.uploadingField === field.key}
-                  onUpload={(file) => editor.upload(field.key, file)}
-                  onRemove={() => { void editor.removeImage(field.key); }}
+                  onChange={(files) => editor.changeAssets(field.key, files)}
                 />
               );
             }
