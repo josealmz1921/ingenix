@@ -1,16 +1,25 @@
 .root { @apply grid min-w-0 gap-3; }
 .label { color: var(--admin-text); font-size: .8rem; font-weight: 500; }
-.preview { @apply flex h-48 items-center justify-center overflow-hidden rounded-lg p-3; background: var(--admin-input); border: 1px solid var(--admin-border); }
-.preview img { @apply h-full max-w-full object-contain; }
-.target { @apply grid min-h-36 cursor-pointer place-items-center gap-2 rounded-lg border border-dashed p-5 text-center; border-color: var(--admin-border); background: var(--admin-input); color: var(--admin-text); font-size: .8rem; transition: border-color .15s, background-color .15s; }
+.imageList { @apply grid gap-4; grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr)); }
+.single .imageList { grid-template-columns: minmax(0, 1fr); }
+.item { @apply relative min-w-0; }
+.imageContainer { @apply relative flex h-40 items-center justify-center overflow-hidden rounded p-2; background: var(--admin-input); border: 1px solid var(--admin-border); }
+.imageContainer img { @apply h-full max-w-full object-contain; }
+.previewTarget { @apply flex h-full w-full items-center justify-center; }
+.previewTarget[role='button'] { @apply cursor-pointer; }
+.previewTarget:focus-visible { outline: 2px solid var(--admin-accent); outline-offset: -2px; }
+.previewTarget[aria-disabled='true'] { @apply cursor-not-allowed opacity-60; }
+.previewTarget.active { background: var(--admin-selected); outline: 2px dashed var(--admin-accent); }
+.replaceHint { @apply absolute inset-x-0 bottom-0 px-2 py-1 text-center; background: var(--admin-surface); color: var(--admin-text); font-size: .7rem; }
+.fileData { @apply mt-2 break-words; color: var(--admin-muted); font-size: .7rem; }
+.target { @apply flex min-h-36 cursor-pointer flex-col items-center justify-center gap-2 rounded border border-dashed p-4 text-center; border-color: var(--admin-border); background: var(--admin-input); color: var(--admin-text); font-size: .8rem; }
 .target:hover, .target.active { border-color: var(--admin-accent); background: var(--admin-selected); }
 .target[aria-disabled='true'] { @apply cursor-not-allowed opacity-60; }
 .target:focus-visible { outline: 2px solid var(--admin-accent); outline-offset: 4px; }
 .root .target svg { @apply h-7 w-7; color: var(--admin-accent); }
 .help { color: var(--admin-muted); font-size: .7rem; }
-.actions { @apply flex flex-wrap gap-2; }
-.root .actions button { @apply min-h-[44px] rounded-md px-3 py-2; background: transparent; border: 1px solid var(--admin-border); color: var(--admin-text); }
-.root .actions button:hover:not(:disabled) { background: var(--admin-raised); border-color: var(--admin-accent); }
-.root .actions svg { @apply h-4 w-4; }
-.root > [role='status'] { color: var(--admin-success); font-size: .75rem; }
-@media (prefers-reduced-motion: reduce) { .target { @apply transition-none; } }
+.root .deleteButton, .root .handle { @apply absolute z-10 flex h-9 min-h-0 w-9 items-center justify-center rounded p-2; background: var(--admin-surface); color: var(--admin-text); border: 1px solid var(--admin-border); }
+.root .deleteButton { @apply right-1 top-1; }
+.root .handle { @apply left-1 top-1 cursor-grab; touch-action: none; }
+.root .deleteButton svg, .root .handle svg { @apply h-4 w-4; }
+.root > [role='status'] { color: var(--admin-muted); font-size: .75rem; }

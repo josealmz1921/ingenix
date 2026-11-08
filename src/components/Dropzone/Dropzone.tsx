@@ -1,28 +1,47 @@
 'use client';
 
-/* eslint-disable @next/next/no-img-element -- Blob previews and stored images must render without the image optimizer. */
+/* eslint-disable @next/next/no-img-element -- Local selections use blob previews. */
 import { useEffect, useId, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { ArrowUpTrayIcon, PhotoIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import { SortableContext, arrayMove, rectSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { PhotoIcon, TrashIcon } from '@heroicons/react/24/outline';
+import Swal from 'sweetalert2';
+import { confirmationTheme } from '@/src/components/Admin/confirmationTheme';
+import SortableItem from './SortableItem';
+import type { DropzoneProps, PreviewFile } from './types';
 import styles from './dropzone.module.css';
 
-type Props = {
-  label: string;
-  value: string;
-  alt?: string;
-  disabled?: boolean;
-  uploading?: boolean;
-  onUpload: (file: File) => Promise<void>;
-  onRemove: () => void;
-};
-
-export default function Dropzone({ label, value, alt, disabled = false, uploading = false, onUpload, onRemove }: Props) {
+/** Selection and ordering only: persistence belongs to the enclosing form. */
+export default function Dropzone({
+  label,
+  values,
+  onChange,
+  onDelete,
+  maxFiles = 0,
+  alt,
+  disabled = false,
+  uploading = false,
+}: DropzoneProps) {
   const id = useId();
-  const pending = useRef(false);
   const blobUrls = useRef(new Set<string>());
-  const [selection, setSelection] = useState<{ file: File; preview: string } | null>(null);
   const [error, setError] = useState('');
-  const [uploaded, setUploaded] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const locked = disabled || uploading || confirming;
+  const atLimit = maxFiles > 0 && values.length >= maxFiles;
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  useEffect(() => {
+    for (const url of blobUrls.current) {
+      if (!values.some((asset) => asset.preview === url)) {
+        URL.revokeObjectURL(url);
+        blobUrls.current.delete(url);
+      }
+    }
+  }, [values]);
 
   useEffect(() => {
     const urls = blobUrls.current;
@@ -32,85 +51,153 @@ export default function Dropzone({ label, value, alt, disabled = false, uploadin
     };
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+  function update(files: PreviewFile[]) {
+    onChange(files.map((file, position) => ({ ...file, position })));
+    setError('');
+  }
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { 'image/jpeg': ['.jpg', '.jpeg'], 'image/png': ['.png'] },
-    multiple: false,
-    maxFiles: 1,
+    multiple: maxFiles !== 1,
+    maxFiles,
     minSize: 1,
     maxSize: 5 * 1024 * 1024,
-    disabled: disabled || uploading,
+    disabled: locked,
     onDropRejected: () => {
-      setUploaded(false);
-      setError('Selecciona una sola imagen JPG o PNG, de máximo 5 MiB.');
+      setError('Selecciona imágenes JPG o PNG de máximo 5 MiB, sin superar el límite de archivos.');
     },
-    onDrop: async (files, rejections) => {
-      if (pending.current || disabled || uploading || rejections.length || files.length !== 1) return;
-      pending.current = true;
-      setError('');
-      setUploaded(false);
-      const url = URL.createObjectURL(files[0]);
-      blobUrls.current.add(url);
-      setSelection({ file: files[0], preview: url });
-      try {
-        await onUpload(files[0]);
-        setUploaded(true);
-      } catch (reason) {
-        setError(reason instanceof Error ? reason.message : 'No se pudo subir la imagen. Inténtalo de nuevo.');
-      } finally {
-        pending.current = false;
-        setSelection(null);
-        URL.revokeObjectURL(url);
-        blobUrls.current.delete(url);
+    onDrop: (files, rejections) => {
+      if (locked || rejections.length || !files.length) return;
+      const retained = maxFiles === 1 ? [] : values;
+      if (maxFiles > 0 && retained.length + files.length > maxFiles) {
+        setError(`Este campo admite un máximo de ${maxFiles} archivos.`);
+        return;
       }
+      const selected = files.map((file) => {
+        const preview = URL.createObjectURL(file);
+        blobUrls.current.add(preview);
+        return { file, preview, name: file.name };
+      });
+      update([...retained, ...selected]);
     },
   });
 
-  const source = selection ? selection.preview : value;
+  function reorder({ active, over }: DragEndEvent) {
+    if (locked || !over || active.id === over.id) return;
+    const from = values.findIndex((file) => file.preview === active.id);
+    const to = values.findIndex((file) => file.preview === over.id);
+    if (from >= 0 && to >= 0) update(arrayMove(values, from, to));
+  }
+
+  async function remove(asset: PreviewFile) {
+    if (locked) return;
+    setConfirming(true);
+    try {
+      const result = await Swal.fire({
+        ...confirmationTheme(true),
+        title: '¿Quitar esta imagen?',
+        text: 'El cambio se aplicará al guardar. El archivo no se elimina de Cloudinary.',
+        icon: 'warning',
+        confirmButtonText: 'Quitar imagen',
+      });
+      if (result.isConfirmed) {
+        await onDelete?.(asset);
+        update(values.filter((file) => file.preview !== asset.preview));
+      }
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'No se pudo quitar la imagen.');
+    } finally {
+      setConfirming(false);
+    }
+  }
+
   return (
-    <div className={styles.root} aria-busy={uploading}>
+    <div className={`${styles.root} ${maxFiles === 1 ? styles.single : ''}`} aria-busy={uploading}>
       <span id={`${id}-label`} className={styles.label}>{label}</span>
-      {source && (
-        <div className={styles.preview}>
-          <img src={source} alt={alt || `Vista previa de ${label.toLowerCase()}`} />
-        </div>
-      )}
-      <div
-        {...getRootProps({
-          role: 'button',
-          'aria-labelledby': `${id}-label ${id}-prompt`,
-          'aria-describedby': `${id}-help`,
-          'aria-disabled': disabled || uploading,
-        })}
-        className={`${styles.target} ${isDragActive ? styles.active : ''}`}
-      >
-        <input {...getInputProps({ 'aria-label': `Seleccionar ${label.toLowerCase()}` })} />
-        {value ? <ArrowUpTrayIcon /> : <PhotoIcon />}
-        <span id={`${id}-prompt`}>
-          {uploading ? 'Subiendo imagen…' : isDragActive ? 'Suelta la imagen aquí' : value ? 'Arrastra otra imagen para reemplazarla' : 'Arrastra una imagen o haz clic para seleccionarla'}
-        </span>
-        <span id={`${id}-help`} className={styles.help}>Una imagen · JPG o PNG · Máximo 5 MiB</span>
-      </div>
-      {value && (
-        <div className={styles.actions}>
-          <button type="button" disabled={disabled || uploading} onClick={open}>
-            <ArrowUpTrayIcon /> Reemplazar
-          </button>
-          <button
-            type="button"
-            disabled={disabled || uploading}
-            onClick={() => {
-              setError('');
-              setUploaded(false);
-              onRemove();
-            }}
+      <div className={styles.imageList}>
+        <DndContext
+          sensors={locked || maxFiles === 1 ? [] : sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={reorder}
+        >
+          <SortableContext items={values.map((file) => file.preview)} strategy={rectSortingStrategy}>
+            {values.map((asset, index) => (
+              <SortableItem
+                key={asset.preview}
+                id={asset.preview}
+                disabled={locked || maxFiles === 1}
+                label={`Mover ${asset.name || label}, posición ${index + 1}`}
+              >
+                <div className={styles.imageContainer}>
+                  <div
+                    {...(maxFiles === 1 ? getRootProps({
+                      role: 'button',
+                      'aria-label': `Reemplazar ${label.toLowerCase()}`,
+                      'aria-describedby': `${id}-help`,
+                      'aria-disabled': locked,
+                    }) : {})}
+                    className={`${styles.previewTarget} ${isDragActive && maxFiles === 1 ? styles.active : ''}`}
+                  >
+                    {maxFiles === 1 && (
+                      <input {...getInputProps({ 'aria-label': `Seleccionar ${label.toLowerCase()}` })} />
+                    )}
+                    <img
+                      src={asset.preview}
+                      alt={alt || asset.name || `Vista previa de ${label.toLowerCase()}`}
+                    />
+                    {maxFiles === 1 && (
+                      <span className={styles.replaceHint}>
+                        {isDragActive ? 'Suelta para reemplazar' : 'Haz clic o arrastra para reemplazar'}
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.deleteButton}
+                    aria-label={`Quitar ${asset.name || label}`}
+                    disabled={locked}
+                    onClick={() => { void remove(asset); }}
+                  >
+                    <TrashIcon />
+                  </button>
+                </div>
+                <p className={styles.fileData}>
+                  {maxFiles !== 1 && `${index + 1}. `}
+                  {asset.name || 'Imagen guardada'}
+                  {asset.file && ` · ${(asset.file.size / 1024).toFixed(1)} KB`}
+                </p>
+              </SortableItem>
+            ))}
+          </SortableContext>
+        </DndContext>
+        {!atLimit && (
+          <div
+            {...getRootProps({
+              role: 'button',
+              'aria-labelledby': `${id}-label ${id}-prompt`,
+              'aria-describedby': `${id}-help`,
+              'aria-disabled': locked,
+            })}
+            className={`${styles.target} ${isDragActive ? styles.active : ''}`}
           >
-            <TrashIcon /> Quitar
-          </button>
-        </div>
+            <input {...getInputProps({ 'aria-label': `Seleccionar ${label.toLowerCase()}` })} />
+            <PhotoIcon />
+            <span id={`${id}-prompt`}>
+              {isDragActive ? 'Suelta la imagen aquí' : 'Selecciona o arrastra imágenes aquí'}
+            </span>
+          </div>
+        )}
+      </div>
+      <span id={`${id}-help`} className={styles.help}>JPG o PNG · Máximo 5 MiB por imagen</span>
+      {uploading && (
+        <p role="status">Subiendo {label.toLowerCase()}…</p>
       )}
-      {uploading && <p role="status">Subiendo {label.toLowerCase()}… Espera antes de guardar.</p>}
-      {!uploading && uploaded && value && <p role="status">Imagen subida correctamente.</p>}
-      {error && <p role="alert">{error}</p>}
+      {!uploading && values.some((asset) => asset.file) && (
+        <p role="status">Selección pendiente. Se subirá al guardar.</p>
+      )}
+      {error && (
+        <p role="alert">{error}</p>
+      )}
     </div>
   );
 }

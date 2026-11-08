@@ -7,6 +7,7 @@ import { emptyResource, resourceDefinitions, type ResourceName, type ResourceDoc
 import { uploadImage } from '@/src/utilities/cloudinary';
 import { contentRequest } from './contentRequest';
 import { confirmationTheme } from './confirmationTheme';
+import type { PreviewFile } from '@/src/components/Dropzone/types';
 
 /** Persistence and async state are kept out of the form markup. */
 export function useResourceEditor(resource: ResourceName, id: string) {
@@ -23,9 +24,11 @@ export function useResourceEditor(resource: ResourceName, id: string) {
   const [loadFailed, setLoadFailed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
+  const [assets, setAssets] = useState<Record<string, PreviewFile[]>>({});
+  const uploadedFiles = useRef(new WeakMap<File, string>());
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const dirty = JSON.stringify(document) !== saved;
+  const dirty = JSON.stringify(document) !== saved || Object.keys(assets).length > 0;
 
   useEffect(() => {
     let active = true;
@@ -98,9 +101,31 @@ export function useResourceEditor(resource: ResourceName, id: string) {
         if (!result.isConfirmed) return;
       }
       const target = creating ? slug : id;
-      const result = await contentRequest(`${resource}/${encodeURIComponent(target)}`, 'PUT', { document, revision });
+      const nextDocument = { ...document };
+      try {
+        for (const [key, files] of Object.entries(assets)) {
+          const asset = files[0];
+          if (asset?.file) {
+            setUploadingField(key);
+            let url = uploadedFiles.current.get(asset.file);
+            if (!url) {
+              const result = await uploadImage(asset.file);
+              url = result.secure_url;
+              uploadedFiles.current.set(asset.file, url);
+            }
+            nextDocument[key] = url;
+          } else {
+            nextDocument[key] = asset?.preview || '';
+          }
+        }
+      } finally {
+        setUploadingField(null);
+      }
+      const result = await contentRequest(`${resource}/${encodeURIComponent(target)}`, 'PUT', { document: nextDocument, revision });
+      setDocument(nextDocument);
+      setAssets({});
       setRevision(result.revision);
-      setSaved(JSON.stringify(document));
+      setSaved(JSON.stringify(nextDocument));
       setMessage(document.published ? 'Contenido publicado.' : 'Borrador guardado.');
       if (creating) router.replace(`/dashboard/${resource}/${target}`);
     });
@@ -120,45 +145,17 @@ export function useResourceEditor(resource: ResourceName, id: string) {
     });
   }
 
-  async function upload(key: string, file: File) {
-    if (!definition.fields.some(field => field.key === key && field.kind === 'image')) {
-      throw new Error('Campo de imagen no válido.');
-    }
-    if (pending.current || loading || loadFailed) {
-      throw new Error('Espera a que termine la operación actual.');
-    }
-    pending.current = true;
-    setBusy(true);
-    setUploadingField(key);
-    setError('');
-    setMessage('');
-    try {
-      const result = await uploadImage(file);
-      change(key, result.secure_url);
-    } finally {
-      pending.current = false;
-      setBusy(false);
-      setUploadingField(null);
-    }
-  }
-
-  async function removeImage(key: string) {
+  function changeAssets(key: string, files: PreviewFile[]) {
+    if (pending.current || loading || loadFailed) return;
     if (!definition.fields.some(field => field.key === key && field.kind === 'image')) return;
-    await perform(async () => {
-      const result = await Swal.fire({
-        ...confirmationTheme(true),
-        title: '¿Quitar esta imagen?',
-        text: 'Se quitará del registro al guardar. El archivo no se elimina de Cloudinary.',
-        icon: 'warning',
-        confirmButtonText: 'Quitar imagen',
-      });
-      if (!result.isConfirmed) return;
+    setAssets(current => ({ ...current, [key]: files.slice(0, 1) }));
+    if (!files.length) {
       const altKey = key === 'logo' ? 'logoAlt' : 'imageAlt';
       setDocument(current => ({ ...current, [key]: '', [altKey]: '' }));
-      setMessage('');
-    });
+    }
+    setMessage('');
   }
 
   return { definition, creating, document, slug, setSlug, revision, categories, loading, busy,
-    error, message, dirty, disabled: busy || loading || loadFailed, change, save, remove, upload, uploadingField, removeImage };
+    error, message, dirty, disabled: busy || loading || loadFailed, change, save, remove, assets, changeAssets, uploadingField };
 }
