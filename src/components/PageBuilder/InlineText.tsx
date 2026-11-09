@@ -20,7 +20,9 @@ export default function InlineText({
 }) {
   const element = useRef<HTMLSpanElement>(null);
   const composing = useRef(false);
+  const committed = useRef(value);
   useEffect(() => {
+    committed.current = value;
     if (
       element.current &&
       element.current.textContent !== value &&
@@ -33,7 +35,10 @@ export default function InlineText({
     const text = element.current.innerText.replace(/\r/g, '');
     const next = (multiline ? text : text.replace(/\n/g, ' ')).slice(0, 10000);
     if (next !== text) element.current.textContent = next;
-    onChange(next);
+    if (next !== committed.current) {
+      committed.current = next;
+      onChange(next);
+    }
   }
   function insertPlainText(text: string) {
     const selection = window.getSelection();

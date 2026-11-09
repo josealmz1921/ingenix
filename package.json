@@ -16,7 +16,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:page-builder": "node --test tests/page-builder.test.mjs tests/pages-api.test.cjs tests/builder-confirmations.test.cjs tests/published-home.test.cjs",
+    "test:page-builder": "node --test tests/page-builder.test.mjs tests/pages-api.test.cjs tests/builder-confirmations.test.cjs tests/published-home.test.cjs tests/builder-field-identity.test.cjs",
     "test:security": "node --test tests/security.test.cjs tests/resources.test.cjs",
     "test:rules": "node --test tests/firestore.rules.test.cjs",
     "test:admin-ui": "node --test tests/admin-ui.test.cjs tests/loading-page.test.cjs tests/tailwind-modules.test.cjs tests/admin-controls.test.cjs",

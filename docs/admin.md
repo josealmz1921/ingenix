@@ -74,6 +74,12 @@ Sin documento, sin publicación, sin datos utilizables o ante una lectura invál
 
 El bloque `contacto` de tipo `text` conserva posición, encabezados, variante y visibilidad del PageBuilder. Sus canales se resuelven en el host mediante `composeHomeContact` y `HomePageRenderer`, sin copiar datos de configuración al borrador ni introducir iconos o Firebase en el módulo portable. El lienzo refleja la disponibilidad; la vista previa privada y la portada muestran los canales e iconos reales. Los botones y notas locales antiguos de ese bloque no sustituyen la configuración global. Eliminar o esconder el bloque no elimina los datos del Footer. Cambiar un canal no requiere volver a publicar la portada.
 
+### Identidad de campos del PageBuilder
+
+El editor visual identifica bloques y elementos por identidad estable, no por posición. Los inputs usan `useId()` para asociar etiquetas sin colisiones; estas identidades de interfaz no se guardan en el documento. Las ediciones se aplican como actualizaciones funcionales sobre el estado actual y por ID de bloque, por lo que insertar, duplicar o reordenar no redirige eventos al elemento vecino. Los eventos tardíos de elementos eliminados se ignoran. La edición inline conserva la identidad de cada elemento y no repite un cambio sin modificaciones al perder el foco.
+
+Las rutas de edición del lienzo se resuelven desde la proyección que realmente se muestra, no desde las posiciones del documento original. Si se oculta un botón de contacto, los botones restantes conservan su vínculo con el elemento original: editar el segundo visible puede corresponder al tercero guardado. Esto también aplica al lienzo de respaldo cuando hay elementos nuevos incompletos; el filtrado público de contacto se mantiene intacto.
+
 ### Imágenes del administrador
 
 Servicios, Proyectos, Blog y Empresa usan `src/components/Dropzone/Dropzone.tsx`, adaptado al modo de un solo archivo del Dropzone de Holística. Usa `react-dropzone` para selección, arrastre, teclado y rechazo de archivos; admite una imagen JPG/PNG de hasta 5 MiB por campo. No hay entrada manual de URL. En proyectos, la captura y el logo tienen Dropzones independientes y se asignan a `image` y `logo`, respectivamente. Las URLs existentes se mantienen internamente y se muestran como miniaturas, sin migrar documentos.

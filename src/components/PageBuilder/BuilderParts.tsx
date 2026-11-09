@@ -28,6 +28,7 @@ import {
 import { blockDescriptions } from './editorOperations';
 import styles from './builder.module.css';
 import InlineText from './InlineText';
+import { inlineFieldKey } from './fieldIdentity';
 import { inlineTextFields } from './inlineEditing';
 
 export function BlockIcon({ type }: { type: BlockType }) {
@@ -152,7 +153,7 @@ export function SortableCanvasBlock({
   scale: number;
   valid: boolean;
   onSelect: () => void;
-  onTextChange: (path: string, value: string) => void;
+  onTextChange: (source: PageSection, path: string, value: string) => void;
   toolbar: ReactNode;
   contact?: PublicContact;
 }) {
@@ -174,11 +175,12 @@ export function SortableCanvasBlock({
     const field = fields.find((item) => item.path === path);
     return field ? (
       <InlineText
+        key={`${block.id}-${inlineFieldKey(block, path)}`}
         value={value}
         label={field.label}
         multiline={field.multiline}
         disabled={disabled}
-        onChange={(next) => onTextChange(path, next)}
+        onChange={(next) => onTextChange(block, path, next)}
         onSelect={onSelect}
       />
     ) : (

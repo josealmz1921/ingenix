@@ -1,4 +1,5 @@
 import { createBlock, type BlockType, type PageDocument, type PageSection } from "../../page-builder/editor";
+import { preserveItemIdentity } from './fieldIdentity';
 
 export const blockDescriptions: Record<BlockType, string> = {
     hero: "Presentación y llamada a la acción",
@@ -9,6 +10,15 @@ export const blockDescriptions: Record<BlockType, string> = {
     carousel: "Tarjetas deslizables con imágenes y enlaces",
     progress: "Indicadores con valores y máximos editables",
 };
+
+/** Resolve the target at commit time, not by a position captured before insertion/reordering. */
+export function updateBlockById(page: PageDocument, id: string, update: (block: PageSection) => PageSection): PageDocument {
+    const index = page.sections.findIndex(block => block.id === id);
+    if (index < 0) return page;
+    const block = preserveItemIdentity(page.sections[index], update(page.sections[index]));
+    if (block === page.sections[index]) return page;
+    return { ...page, sections: page.sections.map((entry, position) => position === index ? block : entry) };
+}
 
 /** Gap is a position in the original array, including the position after its end. */
 export function moveBlockToGap(sections: PageSection[], from: number, gap: number): PageSection[] {

@@ -1,4 +1,5 @@
 import { getBlockFields, type EditorField, type PageSection } from '../../page-builder/editor';
+import { preserveItemIdentity, sameItemIdentity } from './fieldIdentity';
 
 export function isInlineField(field: EditorField, type: PageSection['type']) {
     return (field.kind === 'text' || field.kind === 'textarea') && !['id', 'alt'].includes(field.name) && !(type === 'banner' && field.name === 'eyebrow');
@@ -25,12 +26,33 @@ export function inlineTextFields(section: PageSection) {
     return result;
 }
 
-export function updateInlineText(section: PageSection, path: string, value: string): PageSection {
-    if (value.length > 10000 || !inlineTextFields(section).some(field => field.path === path)) return section;
-    const next = structuredClone(section);
+/** Source must be the rendered projection: filtering can change positions without changing identities. */
+export function updateInlineText(section: PageSection, path: string, value: string, source = section): PageSection {
     const keys = path.split('.');
-    let target = next as unknown as Record<string, unknown>;
-    for (const key of keys.slice(0, -1)) target = target[key] as Record<string, unknown>;
-    target[keys[keys.length - 1]] = value;
-    return next;
+    let previous: unknown = source;
+    let current: unknown = section;
+    // A late event may refer to an item whose position has changed since rendering.
+    for (let position = 0; position < keys.length; position++) {
+        const key = keys[position];
+        if (Array.isArray(previous) && Array.isArray(current)) {
+            const item = previous[Number(key)] as Record<string, unknown> | undefined;
+            const index = current.findIndex(entry => item && sameItemIdentity(item, entry));
+            if (index < 0) return section;
+            keys[position] = String(index);
+        }
+        previous = previous && typeof previous === 'object'
+            ? (previous as Record<string, unknown>)[key] : undefined;
+        current = current && typeof current === 'object'
+            ? (current as Record<string, unknown>)[keys[position]] : undefined;
+    }
+    const resolvedPath = keys.join('.');
+    if (value.length > 10000 || !inlineTextFields(section).some(field => field.path === resolvedPath) || current === value) return section;
+    function replace(target: unknown, depth: number): unknown {
+        if (depth === keys.length) return value;
+        const key = keys[depth];
+        if (Array.isArray(target)) return target.map((item, index) => index === Number(key) ? replace(item, depth + 1) : item);
+        const object = target as Record<string, unknown>;
+        return preserveItemIdentity(object, { ...object, [key]: replace(object[key], depth + 1) });
+    }
+    return replace(section, 0) as PageSection;
 }
