@@ -1,5 +1,6 @@
 'use client';
-import { createContext, useContext, useRef, useState } from 'react';
+import { createContext, useContext, useId, useRef, useState } from 'react';
+import { createListIdentity } from './fieldIdentity';
 import type { BlockType, EditorField, ValidationIssue } from '@/src/page-builder/editor';
 import { isInlineField } from './inlineEditing';
 import {
@@ -29,6 +30,7 @@ import { uploadImage } from '@/src/utilities/cloudinary';
 import styles from './builder.module.css';
 
 type Values = Record<string, unknown>;
+export type UpdateValues = (current: Values) => Values;
 export const UploadActivity = createContext<(delta: number) => void>(() => {});
 export const InlineEditingType = createContext<BlockType | null>(null);
 export function blankFields(fields: readonly EditorField[]): Values {
@@ -118,7 +120,7 @@ function ImageField({
 interface FieldsProps {
   fields: readonly EditorField[];
   value: Values;
-  onChange: (next: Values) => void;
+  onChange: (update: UpdateValues) => void;
   prefix: string;
   path?: string;
   issues?: ValidationIssue[];
@@ -145,7 +147,7 @@ function SortableListItem({
   path: string;
   issues: ValidationIssue[];
   total: number;
-  onChange: (next: Values) => void;
+  onChange: (update: UpdateValues) => void;
   onMove: (delta: number) => void;
   onRemove: () => void;
 }) {
@@ -181,7 +183,7 @@ function SortableListItem({
           {title}
         </summary>
         <Fields
-          prefix={`${prefix}-${index}`}
+          prefix={`${prefix}-${id}`}
           path={`${path}[${index}]`}
           issues={issues}
           fields={fields}
@@ -232,18 +234,24 @@ function ListField({
   prefix: string;
   path: string;
   issues: ValidationIssue[];
-  onChange: (next: Values[]) => void;
+  onChange: (update: (current: Values[]) => Values[]) => void;
 }) {
-  const [keys, setKeys] = useState(() => items.map((_, index) => `${prefix}-row-${index}`));
-  const currentKeys = items.map((_, index) => keys[index] || `${prefix}-row-${index}`);
+  const scope = useId();
+  const [identity] = useState(() => createListIdentity(scope));
+  const currentKeys = items.map(identity.keyFor);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 7 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
   function move(from: number, to: number) {
     if (to < 0 || to >= items.length) return;
-    setKeys(arrayMove(currentKeys, from, to));
-    onChange(arrayMove(items, from, to));
+    const sourceKey = currentKeys[from];
+    const targetKey = currentKeys[to];
+    onChange(current => {
+      const start = current.findIndex(item => identity.keyFor(item) === sourceKey);
+      const end = current.findIndex(item => identity.keyFor(item) === targetKey);
+      return start < 0 || end < 0 ? current : arrayMove(current, start, end);
+    });
   }
   return (
     <fieldset className={styles.group}>
@@ -272,13 +280,12 @@ function ListField({
               prefix={prefix}
               path={path}
               issues={issues}
-              onChange={(next) =>
-                onChange(items.map((entry, position) => (position === index ? next : entry)))
+              onChange={(update) =>
+                onChange(current => identity.update(current, currentKeys[index], update))
               }
               onMove={(delta) => move(index, index + delta)}
               onRemove={() => {
-                setKeys(currentKeys.filter((_, position) => position !== index));
-                onChange(items.filter((_, position) => position !== index));
+                onChange(current => current.filter(entry => identity.keyFor(entry) !== currentKeys[index]));
               }}
             />
           ))}
@@ -290,8 +297,8 @@ function ListField({
         className={styles.addItem}
         disabled={items.length >= (field.max || 100)}
         onClick={() => {
-          setKeys([...currentKeys, `item-${crypto.randomUUID()}`]);
-          onChange([...items, blankFields(field.fields || [])]);
+          const item = blankFields(field.fields || []);
+          onChange(current => current.length >= (field.max || 100) ? current : [...current, item]);
         }}
       >
         <PlusIcon />
@@ -310,18 +317,21 @@ export default function Fields({
   issues = [],
 }: FieldsProps) {
   const inlineType = useContext(InlineEditingType);
+  const instanceId = useId();
   const update = (name: string, next: unknown) => {
-    const result = { ...value };
-    if (next === undefined) delete result[name];
-    else result[name] = next;
-    onChange(result);
+    onChange(current => {
+      const result = { ...current };
+      if (next === undefined) delete result[name];
+      else result[name] = next;
+      return result;
+    });
   };
   return (
     <>
       {fields.map((field) => {
         if (inlineType && isInlineField(field, inlineType)) return null;
         const data = value[field.name];
-        const id = `${prefix}-${field.name}`;
+        const id = `${instanceId}-${prefix}-${field.name}`;
         const fieldPath = `${path}.${field.name}`;
         const fieldErrors = issues.filter((issue) => issue.path === fieldPath);
         if (field.kind === 'object') {
@@ -336,7 +346,11 @@ export default function Fields({
                     issues={issues}
                     fields={field.fields || []}
                     value={data as Values}
-                    onChange={(next) => update(field.name, next)}
+                    onChange={(transform) => onChange(current => {
+                      const nested = current[field.name];
+                      if (!nested || typeof nested !== 'object') return current;
+                      return { ...current, [field.name]: transform(nested as Values) };
+                    })}
                   />
                   {!field.required && (
                     <button
@@ -372,7 +386,10 @@ export default function Fields({
               prefix={id}
               path={fieldPath}
               issues={issues}
-              onChange={(next) => update(field.name, next)}
+              onChange={(transform) => onChange(current => ({
+                ...current,
+                [field.name]: transform((current[field.name] || []) as Values[]),
+              }))}
             />
           );
         }

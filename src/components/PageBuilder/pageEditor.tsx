@@ -52,10 +52,10 @@ import {
   type ValidationIssue,
 } from '@/src/page-builder/editor';
 import { adminHeaders } from '@/src/firebase/adminRequest';
-import Fields, { UploadActivity, InlineEditingType } from './Fields';
+import Fields, { UploadActivity, InlineEditingType, type UpdateValues } from './Fields';
 import { PREVIEW_KEY, pageHomeErrors } from '@/src/utilities/pageBuilder';
 import { initialPage } from './initialPage';
-import { duplicateBlock, insertBlock, moveBlockToGap } from './editorOperations';
+import { duplicateBlock, insertBlock, moveBlockToGap, updateBlockById } from './editorOperations';
 import {
   CatalogBlock,
   InsertGap,
@@ -76,6 +76,7 @@ import CatalogSelection from './CatalogSelection';
 import { usePageCatalogs } from './usePageCatalogs';
 import LoadingPage from '@/src/components/LoadingPage/LoadingPage';
 import { composeHomeContact } from '@/src/content/contact';
+import { editorItemKey } from './fieldIdentity';
 
 async function request(method = 'GET', body?: unknown) {
   const response = await fetch('/api/admin/pages/home', {
@@ -351,7 +352,7 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
     });
   }, []);
 
-  function change(next: PageDocument) {
+  function change(next: PageDocument | ((current: PageDocument) => PageDocument)) {
     if (disabled) return;
     setDocument(next);
     setMessage('');
@@ -389,12 +390,13 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
       'Contenido original de Ingenix cargado localmente. No se ha guardado ni publicado ningún cambio.',
     );
   }
-  function updateBlock(index: number, next: PageSection) {
-    if (index === selectedIndex) setSelectedId(next.id);
-    change({
-      ...document,
-      sections: document.sections.map((block, position) => (position === index ? next : block)),
-    });
+  function updateBlock(id: string, update: (block: PageSection) => PageSection) {
+    change(current => updateBlockById(current, id, update));
+  }
+  function updateFields(id: string, update: UpdateValues) {
+    updateBlock(id, current => (
+      update(current as unknown as Record<string, unknown>) as unknown as PageSection
+    ));
   }
   function add(
     type: BlockType,
@@ -402,7 +404,7 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
   ) {
     if (disabled || document.sections.length >= 100) return;
     const id = `bloque-${crypto.randomUUID()}`;
-    change(insertBlock(document, type, index, id));
+    change(current => insertBlock(current, type, index, id));
     select(id);
     setPanel(null);
     setMessage(
@@ -411,21 +413,24 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
   }
   function duplicate(index: number) {
     const id = `bloque-${crypto.randomUUID()}`;
-    change(duplicateBlock(document, index, id));
+    const sourceId = document.sections[index]?.id;
+    change(current => duplicateBlock(current, current.sections.findIndex(block => block.id === sourceId), id));
     select(id);
   }
   async function remove(index: number) {
+    const id = document.sections[index]?.id;
     if (!(await confirmAction('remove'))) return;
-    const sections = document.sections.filter((_, position) => position !== index);
-    change({ ...document, sections });
+    const sections = document.sections.filter(block => block.id !== id);
+    change(current => ({ ...current, sections: current.sections.filter(block => block.id !== id) }));
     setSelectedId(sections[Math.max(0, index - 1)]?.id ?? null);
   }
   function move(index: number, delta: number) {
-    const to = index + delta;
-    if (to < 0 || to >= document.sections.length) return;
-    change({
-      ...document,
-      sections: moveBlockToGap(document.sections, index, to > index ? to + 1 : to),
+    const id = document.sections[index]?.id;
+    change(current => {
+      const from = current.sections.findIndex(block => block.id === id);
+      const to = from + delta;
+      if (from < 0 || to < 0 || to >= current.sections.length) return current;
+      return { ...current, sections: moveBlockToGap(current.sections, from, to > from ? to + 1 : to) };
     });
   }
   async function persist(action: 'save' | 'publish') {
@@ -904,6 +909,7 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
                     }}
                   />
                   {document.sections.map((block, index) => {
+                    const renderedBlock = renderedDocument.sections[index];
                     const blockValidation = validatePageDocument(
                       { ...document, sections: [block] },
                       { mode: 'draft' },
@@ -914,7 +920,7 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
                       <div key={block.id}>
                         <SortableCanvasBlock
                           contact={catalogState.catalogs.contact}
-                          block={renderedDocument.sections[index]}
+                          block={renderedBlock}
                           index={index}
                           page={renderedDocument}
                           selected={block.id === selectedId}
@@ -922,8 +928,10 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
                           scale={scale}
                           valid={valid}
                           onSelect={() => select(block.id)}
-                          onTextChange={(path, value) =>
-                            updateBlock(index, updateInlineText(block, path, value))
+                          onTextChange={(source, path, value) =>
+                            updateBlock(block.id, current => (
+                              updateInlineText(current, path, value, source)
+                            ))
                           }
                           toolbar={
                             <>
@@ -955,7 +963,7 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
                                 type="button"
                                 disabled={disabled}
                                 onClick={() =>
-                                  updateBlock(index, { ...block, visible: !block.visible })
+                                  updateBlock(block.id, current => ({ ...current, visible: !current.visible }))
                                 }
                                 aria-label={`${block.visible ? 'Ocultar' : 'Mostrar'} bloque ${index + 1}`}
                               >
@@ -1028,7 +1036,7 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
                 <fieldset
                   disabled={disabled}
                   className={styles.inspectorFields}
-                  key={selectedIndex}
+                  key={editorItemKey(selected)}
                 >
                   {selected.id === 'contacto' && selected.type === 'text' && (
                     <p className={styles.help}>
@@ -1050,7 +1058,13 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
                       onRefresh={() => {
                         void catalogState.refresh();
                       }}
-                      onChange={(section) => updateBlock(selectedIndex, section)}
+                      onChange={(section) => updateBlock(selected.id, current => ({
+                        ...current,
+                        catalog: section.catalog,
+                        content: section.catalog?.mode !== 'static'
+                          ? { ...current.content, items: [] }
+                          : current.content,
+                      } as PageSection))}
                     />
                   )}
                   <div className={styles.variantPicker}>
@@ -1062,7 +1076,7 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
                           key={variant}
                           aria-pressed={selected.variant === variant}
                           onClick={() =>
-                            updateBlock(selectedIndex, { ...selected, variant } as PageSection)
+                            updateBlock(selected.id, current => ({ ...current, variant } as PageSection))
                           }
                         >
                           <span
@@ -1104,14 +1118,12 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
                     <div>
                       <InlineEditingType value={selected.type}>
                         <Fields
-                          prefix={`block-${selectedIndex}`}
+                          prefix={`block-${selected.id}`}
                           path={`page.sections[${selectedIndex}]`}
                           issues={currentIssues}
                           fields={selectedFields.filter((field) => field.name === 'content')}
                           value={selected as unknown as Record<string, unknown>}
-                          onChange={(next) =>
-                            updateBlock(selectedIndex, next as unknown as PageSection)
-                          }
+                          onChange={(update) => updateFields(selected.id, update)}
                         />
                       </InlineEditingType>
                     </div>
@@ -1120,16 +1132,14 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
                     <summary>Apariencia</summary>
                     <div>
                       <Fields
-                        prefix={`appearance-${selectedIndex}`}
+                        prefix={`appearance-${selected.id}`}
                         path={`page.sections[${selectedIndex}]`}
                         issues={currentIssues}
                         fields={selectedFields.filter((field) =>
                           ['tone', 'columns', 'settings'].includes(field.name),
                         )}
                         value={selected as unknown as Record<string, unknown>}
-                        onChange={(next) =>
-                          updateBlock(selectedIndex, next as unknown as PageSection)
-                        }
+                        onChange={(update) => updateFields(selected.id, update)}
                       />
                     </div>
                   </details>
@@ -1137,16 +1147,18 @@ export default function PageEditor({ view = 'list' }: { view?: 'list' | 'editor'
                     <summary>Configuración</summary>
                     <div>
                       <Fields
-                        prefix={`config-${selectedIndex}`}
+                        prefix={`config-${selected.id}`}
                         path={`page.sections[${selectedIndex}]`}
                         issues={currentIssues}
                         fields={selectedFields.filter((field) =>
                           ['id', 'visible', 'navigationLabel'].includes(field.name),
                         )}
                         value={selected as unknown as Record<string, unknown>}
-                        onChange={(next) =>
-                          updateBlock(selectedIndex, next as unknown as PageSection)
-                        }
+                        onChange={(update) => {
+                          const nextId = update(selected as unknown as Record<string, unknown>).id;
+                          if (typeof nextId === 'string' && nextId !== selected.id) setSelectedId(nextId);
+                          updateFields(selected.id, update);
+                        }}
                       />
                     </div>
                   </details>
