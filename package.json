@@ -12,6 +12,7 @@
     }
   },
   "scripts": {
+    "test:icons": "node --test tests/site-icons.test.cjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
